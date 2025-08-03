@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -9,15 +9,26 @@ interface StockScan {
   change: number;
   changePercent: number;
   volume: number;
+  volumeSpike: number;
   float: string;
   catalyst: string;
   momentum: {
-    "1m": "up" | "down" | "neutral";
-    "5m": "up" | "down" | "neutral";
-    "15m": "up" | "down" | "neutral";
-    "1h": "up" | "down" | "neutral";
-    "4h": "up" | "down" | "neutral";
-    "daily": "up" | "down" | "neutral";
+    momo1: {
+      "1m": "up" | "down" | "neutral";
+      "5m": "up" | "down" | "neutral";
+      "15m": "up" | "down" | "neutral";
+      "1h": "up" | "down" | "neutral";
+      "4h": "up" | "down" | "neutral";
+      "daily": "up" | "down" | "neutral";
+    };
+    momo2: {
+      "1m": "up" | "down" | "neutral";
+      "5m": "up" | "down" | "neutral";
+      "15m": "up" | "down" | "neutral";
+      "1h": "up" | "down" | "neutral";
+      "4h": "up" | "down" | "neutral";
+      "daily": "up" | "down" | "neutral";
+    };
   };
 }
 
@@ -28,24 +39,46 @@ const Index = () => {
 
   const mockData: StockScan[] = [
     {
-      symbol: "AAPL",
-      price: 15.42,
-      change: 2.18,
-      changePercent: 16.47,
+      symbol: "WSR",
+      price: 12.19,
+      change: 1.23,
+      changePercent: 10.1,
       volume: 2450000,
-      float: "15.6B",
-      catalyst: "Earnings Beat",
-      momentum: { "1m": "up", "5m": "up", "15m": "up", "1h": "up", "4h": "up", "daily": "up" }
+      volumeSpike: 5.2,
+      float: "9.8M",
+      catalyst: "New Product Announcement",
+      momentum: {
+        momo1: { "1m": "up", "5m": "up", "15m": "up", "1h": "up", "4h": "up", "daily": "up" },
+        momo2: { "1m": "up", "5m": "up", "15m": "up", "1h": "up", "4h": "up", "daily": "up" }
+      }
     },
     {
-      symbol: "TSLA",
-      price: 8.75,
-      change: -0.45,
-      changePercent: -4.89,
+      symbol: "THC",
+      price: 5.94,
+      change: 0.61,
+      changePercent: 11.5,
       volume: 1200000,
-      float: "3.2B", 
-      catalyst: "FDA Approval",
-      momentum: { "1m": "down", "5m": "down", "15m": "neutral", "1h": "up", "4h": "up", "daily": "up" }
+      volumeSpike: 8.9,
+      float: "7.3M", 
+      catalyst: "Earnings Beat",
+      momentum: {
+        momo1: { "1m": "up", "5m": "up", "15m": "up", "1h": "up", "4h": "up", "daily": "up" },
+        momo2: { "1m": "up", "5m": "up", "15m": "up", "1h": "up", "4h": "up", "daily": "up" }
+      }
+    },
+    {
+      symbol: "AES",
+      price: 13.15,
+      change: 1.71,
+      changePercent: 15.0,
+      volume: 890000,
+      volumeSpike: 7.3,
+      float: "9.2M",
+      catalyst: "M&A",
+      momentum: {
+        momo1: { "1m": "up", "5m": "up", "15m": "up", "1h": "up", "4h": "up", "daily": "up" },
+        momo2: { "1m": "up", "5m": "up", "15m": "up", "1h": "neutral", "4h": "down", "daily": "up" }
+      }
     }
   ];
 
@@ -92,59 +125,82 @@ const Index = () => {
           )}
         </div>
 
-        {/* Results */}
+        {/* Results Table */}
         {scanResults.length > 0 && (
           <div className="space-y-4">
             <h2 className="text-2xl font-semibold text-foreground mb-4">
               Scan Results ({scanResults.length} opportunities)
             </h2>
             
-            {scanResults.map((stock) => (
-              <Card key={stock.symbol} className="border border-border">
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-xl">{stock.symbol}</CardTitle>
-                    <div className="text-right">
-                      <div className="text-2xl font-bold">${stock.price}</div>
-                      <div className={`text-sm ${stock.change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                        {stock.change >= 0 ? '+' : ''}{stock.change.toFixed(2)} ({stock.changePercent.toFixed(2)}%)
-                      </div>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid md:grid-cols-4 gap-4">
-                    {/* Basic Info */}
-                    <div>
-                      <h4 className="font-semibold mb-2">Basic Info</h4>
-                      <div className="space-y-1 text-sm">
-                        <div>Volume: {stock.volume.toLocaleString()}</div>
-                        <div>Float: {stock.float}</div>
-                      </div>
-                    </div>
-
-                    {/* Catalyst */}
-                    <div>
-                      <h4 className="font-semibold mb-2">Catalyst</h4>
-                      <Badge variant="secondary">{stock.catalyst}</Badge>
-                    </div>
-
-                    {/* Momentum Timeframes */}
-                    <div className="md:col-span-2">
-                      <h4 className="font-semibold mb-2">Momentum Signals</h4>
-                      <div className="grid grid-cols-6 gap-2">
-                        {Object.entries(stock.momentum).map(([timeframe, direction]) => (
-                          <div key={timeframe} className="text-center">
-                            <div className="text-xs mb-1">{timeframe}</div>
-                            <div className={`w-8 h-8 mx-auto rounded ${getMomentumColor(direction)}`}></div>
-                          </div>
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse border border-border bg-card rounded-lg">
+                <thead>
+                  <tr className="bg-muted">
+                    <th className="border border-border p-3 text-left font-semibold">Ticker</th>
+                    <th className="border border-border p-3 text-center font-semibold">Last $</th>
+                    <th className="border border-border p-3 text-center font-semibold">% Change</th>
+                    <th className="border border-border p-3 text-center font-semibold">V-Spike</th>
+                    <th className="border border-border p-3 text-center font-semibold">Float</th>
+                    <th className="border border-border p-3 text-center font-semibold">Catalyst</th>
+                    <th className="border border-border p-3 text-center font-semibold">Momentum</th>
+                    <th className="border border-border p-3 text-center font-semibold text-xs">1 MIN</th>
+                    <th className="border border-border p-3 text-center font-semibold text-xs">5 MIN</th>
+                    <th className="border border-border p-3 text-center font-semibold text-xs">15 MIN</th>
+                    <th className="border border-border p-3 text-center font-semibold text-xs">1H</th>
+                    <th className="border border-border p-3 text-center font-semibold text-xs">4H</th>
+                    <th className="border border-border p-3 text-center font-semibold text-xs">Day</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {scanResults.map((stock, stockIndex) => (
+                    <React.Fragment key={stock.symbol}>
+                      {/* MoMo1 Row */}
+                      <tr className={stockIndex % 2 === 0 ? "bg-background" : "bg-muted/30"}>
+                        <td className="border border-border p-3 font-semibold" rowSpan={2}>
+                          {stock.symbol}
+                        </td>
+                        <td className="border border-border p-3 text-center" rowSpan={2}>
+                          {stock.price.toFixed(2)}
+                        </td>
+                        <td className={`border border-border p-3 text-center font-semibold ${
+                          stock.changePercent >= 0 ? 'text-green-600' : 'text-red-600'
+                        }`} rowSpan={2}>
+                          {stock.changePercent >= 0 ? '+' : ''}{stock.changePercent.toFixed(1)}%
+                        </td>
+                        <td className="border border-border p-3 text-center" rowSpan={2}>
+                          {stock.volumeSpike.toFixed(1)}x
+                        </td>
+                        <td className="border border-border p-3 text-center" rowSpan={2}>
+                          {stock.float}
+                        </td>
+                        <td className="border border-border p-3 text-center text-sm" rowSpan={2}>
+                          {stock.catalyst}
+                        </td>
+                        <td className="border border-border p-3 text-center text-sm font-semibold">
+                          MoMo1
+                        </td>
+                        {(["1m", "5m", "15m", "1h", "4h", "daily"] as const).map((timeframe) => (
+                          <td key={`momo1-${timeframe}`} className="border border-border p-3 text-center">
+                            <div className={`w-4 h-4 mx-auto rounded-full ${getMomentumColor(stock.momentum.momo1[timeframe])}`}></div>
+                          </td>
                         ))}
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                      </tr>
+                      {/* MoMo2 Row */}
+                      <tr className={stockIndex % 2 === 0 ? "bg-background" : "bg-muted/30"}>
+                        <td className="border border-border p-3 text-center text-sm font-semibold">
+                          MoMo2
+                        </td>
+                        {(["1m", "5m", "15m", "1h", "4h", "daily"] as const).map((timeframe) => (
+                          <td key={`momo2-${timeframe}`} className="border border-border p-3 text-center">
+                            <div className={`w-4 h-4 mx-auto rounded-full ${getMomentumColor(stock.momentum.momo2[timeframe])}`}></div>
+                          </td>
+                        ))}
+                      </tr>
+                    </React.Fragment>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
 

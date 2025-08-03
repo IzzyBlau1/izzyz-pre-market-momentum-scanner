@@ -205,35 +205,34 @@ const LandingPage = () => {
           </div>
 
           {/* Scanner Results Table */}
-          {scanResults.length > 0 && (
-            <div style={{ overflowX: 'auto' }}>
-              <table style={{
-                width: '100%',
-                borderCollapse: 'collapse',
-                border: '1px solid #ddd',
-                backgroundColor: 'white',
-                borderRadius: '8px',
-                fontSize: '14px'
-              }}>
-                <thead>
-                  <tr style={{ backgroundColor: '#f0f0f0' }}>
-                    <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left', fontWeight: 'bold' }}>Ticker</th>
-                    <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center', fontWeight: 'bold' }}>Last $</th>
-                    <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center', fontWeight: 'bold' }}>% Change</th>
-                    <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center', fontWeight: 'bold' }}>V-Spike</th>
-                    <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center', fontWeight: 'bold' }}>Float</th>
-                    <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center', fontWeight: 'bold' }}>Catalyst</th>
-                    <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center', fontWeight: 'bold' }}>Momentum</th>
-                    <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center', fontWeight: 'bold', fontSize: '10px' }}>1 MIN</th>
-                    <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center', fontWeight: 'bold', fontSize: '10px' }}>5 MIN</th>
-                    <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center', fontWeight: 'bold', fontSize: '10px' }}>15 MIN</th>
-                    <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center', fontWeight: 'bold', fontSize: '10px' }}>1H</th>
-                    <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center', fontWeight: 'bold', fontSize: '10px' }}>4H</th>
-                    <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center', fontWeight: 'bold', fontSize: '10px' }}>Day</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {scanResults.map((stock, stockIndex) => (
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{
+              width: '100%',
+              borderCollapse: 'collapse',
+              border: '1px solid #ddd',
+              backgroundColor: 'white',
+              borderRadius: '8px',
+              fontSize: '14px'
+            }}>
+              <thead>
+                <tr style={{ backgroundColor: '#f0f0f0' }}>
+                  <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left', fontWeight: 'bold' }}>Ticker</th>
+                  <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center', fontWeight: 'bold' }}>Last $</th>
+                  <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center', fontWeight: 'bold' }}>% Change</th>
+                  <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center', fontWeight: 'bold' }}>V-Spike</th>
+                  <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center', fontWeight: 'bold' }}>Float</th>
+                  <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center', fontWeight: 'bold' }}>Catalyst</th>
+                  <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center', fontWeight: 'bold' }}>Momentum</th>
+                  <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center', fontWeight: 'bold', fontSize: '10px' }}>1 MIN</th>
+                  <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center', fontWeight: 'bold', fontSize: '10px' }}>5 MIN</th>
+                  <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center', fontWeight: 'bold', fontSize: '10px' }}>15 MIN</th>
+                  <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center', fontWeight: 'bold', fontSize: '10px' }}>1H</th>
+                  <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center', fontWeight: 'bold', fontSize: '10px' }}>4H</th>
+                  <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center', fontWeight: 'bold', fontSize: '10px' }}>Day</th>
+                </tr>
+              </thead>
+              <tbody>
+                {scanResults.length > 0 && scanResults.map((stock, stockIndex) => (
                     <React.Fragment key={stock.symbol}>
                       {/* MoMo1 Row */}
                       <tr style={{ backgroundColor: stockIndex % 2 === 0 ? '#fff' : '#f9f9f9' }}>
@@ -293,12 +292,12 @@ const LandingPage = () => {
                           </td>
                         ))}
                       </tr>
-                    </React.Fragment>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+                     </React.Fragment>
+                  ))
+                }
+              </tbody>
+            </table>
+          </div>
 
           {/* Empty State */}
           {scanResults.length === 0 && !isScanning && (

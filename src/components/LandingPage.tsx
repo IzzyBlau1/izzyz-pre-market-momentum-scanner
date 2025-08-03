@@ -152,7 +152,7 @@ const LandingPage = () => {
               color: '#222',
               textAlign: 'center',
               fontSize: '20px',
-              fontWeight: 'normal',
+              fontWeight: 'bold',
               marginTop: '10px',
               marginBottom: '15px'
             }}>
@@ -320,7 +320,9 @@ const LandingPage = () => {
           margin: 0,
           padding: 0,
           textAlign: 'center',
-          color: '#222'
+          color: '#222',
+          fontWeight: 'bold',
+          marginBottom: '20px'
         }}>
           What Makes This Scanner So Special?
         </h3>
@@ -342,7 +344,13 @@ const LandingPage = () => {
           </li>
         </ul>
         
-        <h3 style={{ color: '#222', textAlign: 'center' }}>What's Included:</h3>
+        <h3 style={{ 
+          color: '#222', 
+          textAlign: 'center',
+          fontWeight: 'bold',
+          marginTop: '40px',
+          marginBottom: '20px'
+        }}>What's Included:</h3>
         <ul style={{ marginLeft: '20px' }}>
           <li style={{ color: '#222' }}>✅ Instant access to the standalone scanner app</li>
           <li style={{ color: '#222' }}>✅ No Recurring or Subscription Fees. Lifetime FREE Upgrades.</li>
@@ -353,15 +361,28 @@ const LandingPage = () => {
           <li style={{ color: '#222' }}>✅ Compatible with Windows, Mac, Android, and iOS — available as a mobile download or use through your desktop browser</li>
         </ul>
         
-        <h3 style={{ color: '#222', textAlign: 'center' }}>As easy as 1, 2, 3:</h3>
+        <h3 style={{ 
+          color: '#222', 
+          textAlign: 'center',
+          fontWeight: 'bold',
+          marginTop: '40px',
+          marginBottom: '20px'
+        }}>As easy as 1, 2, 3:</h3>
         <ol style={{ marginLeft: '20px' }}>
-          <li style={{ color: '#222' }}>Open the scanner app</li>
-          <li style={{ color: '#222' }}>Click the <strong>Scan</strong> button</li>
-          <li style={{ color: '#222' }}>Review results with directional bias, float, volume, and catalyst data</li>
+          <li style={{ color: '#222' }}>1. Open the scanner app</li>
+          <li style={{ color: '#222' }}>2. Click the <strong>Scan</strong> button</li>
+          <li style={{ color: '#222' }}>3. Review results with directional bias, float, volume, and catalyst data</li>
           <li style={{ color: '#222' }}>Execute trades using your broker (if pre-market access is available)</li>
         </ol>
         
-        <h3 style={{ textAlign: 'center', color: '#222' }}>
+        <h3 style={{ 
+          textAlign: 'center', 
+          color: '#222',
+          fontWeight: 'bold',
+          fontSize: '24px',
+          marginTop: '40px',
+          marginBottom: '20px'
+        }}>
           One Time Low Price <span style={{ color: '#008060', fontWeight: 'bold' }}>$97</span> ... No Recurring or Subscription Fees
         </h3>
         <p style={{
@@ -458,7 +479,11 @@ const LandingPage = () => {
         </table>
         
         <div style={{ marginTop: '40px' }}>
-          <h3 style={{ color: '#222', textAlign: 'center' }}>What Traders Are Saying:</h3>
+          <h3 style={{ 
+            color: '#222', 
+            textAlign: 'center',
+            fontWeight: 'bold'
+          }}>What Traders Are Saying:</h3>
           <div style={{
             backgroundColor: '#f9f9f9',
             borderLeft: '5px solid #008060',

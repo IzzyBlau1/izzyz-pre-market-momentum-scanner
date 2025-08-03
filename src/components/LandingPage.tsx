@@ -130,7 +130,7 @@ const LandingPage = () => {
           <div>
             <img 
               alt="Logo" 
-              src="/Image of Izzy2.png" 
+              src="/lovable-uploads/77871a24-00a8-46f0-9aac-df91f38fbbc3.png" 
               style={{
                 width: '240px',
                 height: '150px'

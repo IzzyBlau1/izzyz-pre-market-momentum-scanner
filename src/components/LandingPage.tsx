@@ -142,17 +142,28 @@ const LandingPage = () => {
               color: '#222',
               textAlign: 'center',
               marginTop: 0,
-              marginBottom: '10px'
+              marginBottom: '10px',
+              fontSize: '28px',
+              fontWeight: 'bold'
             }}>
               Izzy'z Pre-Market Momentum Scanner
             </h1>
             <h2 style={{
               color: '#222',
-              textAlign: 'center'
+              textAlign: 'center',
+              fontSize: '20px',
+              fontWeight: 'normal',
+              marginTop: '10px',
+              marginBottom: '15px'
             }}>
               Get the Best Trade Setups 90 Minutes Before the Bell. Enter Your Trades Pre-Market, and Be Done With Your Trading Day Before the Market Even Opens!!
             </h2>
-            <p style={{ textAlign: 'left', color: '#222' }}>
+            <p style={{ 
+              textAlign: 'left', 
+              color: '#222',
+              marginTop: '15px',
+              marginBottom: '20px' 
+            }}>
               <span style={{
                 color: '#008060',
                 fontWeight: 'bold'

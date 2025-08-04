@@ -183,23 +183,16 @@ serve(async (req) => {
           volume: volume.toLocaleString(),
           volumeSpike: volumeSpike.toFixed(1) + 'x',
           float: (() => {
-            console.log(`${symbol} - In float formatter: estimatedFloat=${estimatedFloat}`)
-            // Force string check for NaN
-            const floatStr = String(estimatedFloat);
-            if (floatStr === 'NaN' || !estimatedFloat || isNaN(estimatedFloat) || estimatedFloat <= 0) {
-              console.log(`${symbol} - Returning N/A for float (string check: ${floatStr})`)
+            try {
+              if (!estimatedFloat || typeof estimatedFloat !== 'number' || !isFinite(estimatedFloat) || estimatedFloat <= 0) {
+                return 'N/A';
+              }
+              const result = (estimatedFloat / 1000000).toFixed(1) + 'M';
+              // Final safety check - if result contains NaN, return N/A
+              return result.includes('NaN') ? 'N/A' : result;
+            } catch (e) {
               return 'N/A';
             }
-            const floatInMillions = estimatedFloat / 1000000;
-            const millionsStr = String(floatInMillions);
-            console.log(`${symbol} - floatInMillions=${floatInMillions}, string=${millionsStr}, isNaN=${isNaN(floatInMillions)}`)
-            if (millionsStr === 'NaN' || isNaN(floatInMillions)) {
-              console.log(`${symbol} - floatInMillions is NaN, returning N/A`)
-              return 'N/A';
-            }
-            const result = floatInMillions.toFixed(1) + 'M';
-            console.log(`${symbol} - Final float result: ${result}`)
-            return result;
           })(),
           catalyst: catalyst || "No recent news",
           gainPercent: gainPercent

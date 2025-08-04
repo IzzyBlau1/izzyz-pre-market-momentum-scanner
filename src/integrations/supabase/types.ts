@@ -14,7 +14,203 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      alerts: {
+        Row: {
+          alert_type: string
+          created_at: string
+          id: string
+          is_active: boolean
+          stock_id: string
+          target_value: number | null
+          triggered_at: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          alert_type: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          stock_id: string
+          target_value?: number | null
+          triggered_at?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          alert_type?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          stock_id?: string
+          target_value?: number | null
+          triggered_at?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "alerts_stock_id_fkey"
+            columns: ["stock_id"]
+            isOneToOne: false
+            referencedRelation: "stocks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      scans: {
+        Row: {
+          created_at: string
+          criteria: Json
+          id: string
+          results: Json | null
+          scan_date: string
+          scan_name: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          criteria: Json
+          id?: string
+          results?: Json | null
+          scan_date?: string
+          scan_name: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          criteria?: Json
+          id?: string
+          results?: Json | null
+          scan_date?: string
+          scan_name?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      stocks: {
+        Row: {
+          company_name: string | null
+          created_at: string
+          id: string
+          market_cap: number | null
+          sector: string | null
+          symbol: string
+          updated_at: string
+        }
+        Insert: {
+          company_name?: string | null
+          created_at?: string
+          id?: string
+          market_cap?: number | null
+          sector?: string | null
+          symbol: string
+          updated_at?: string
+        }
+        Update: {
+          company_name?: string | null
+          created_at?: string
+          id?: string
+          market_cap?: number | null
+          sector?: string | null
+          symbol?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      watchlist_items: {
+        Row: {
+          added_at: string
+          id: string
+          stock_id: string
+          watchlist_id: string
+        }
+        Insert: {
+          added_at?: string
+          id?: string
+          stock_id: string
+          watchlist_id: string
+        }
+        Update: {
+          added_at?: string
+          id?: string
+          stock_id?: string
+          watchlist_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "watchlist_items_stock_id_fkey"
+            columns: ["stock_id"]
+            isOneToOne: false
+            referencedRelation: "stocks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "watchlist_items_watchlist_id_fkey"
+            columns: ["watchlist_id"]
+            isOneToOne: false
+            referencedRelation: "watchlists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      watchlists: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_public: boolean
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_public?: boolean
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_public?: boolean
+          name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

@@ -136,16 +136,24 @@ serve(async (req) => {
         
         console.log(`${symbol} profile data: sharesOutstanding=${sharesOutstanding} (type: ${typeof sharesOutstanding}), marketCap=${marketCap} (type: ${typeof marketCap})`)
         
-        if (sharesOutstanding && !isNaN(sharesOutstanding) && sharesOutstanding > 0) {
+        if (sharesOutstanding && !isNaN(sharesOutstanding) && sharesOutstanding > 1000000) { // Must be at least 1M shares
           estimatedFloat = sharesOutstanding * 0.8 // Estimate 80% of shares as float
           console.log(`${symbol} float from shares: ${estimatedFloat} (${(estimatedFloat / 1000000).toFixed(1)}M)`)
-        } else if (marketCap && !isNaN(marketCap) && marketCap > 0 && price > 0) {
+        } else if (marketCap && !isNaN(marketCap) && marketCap > 10 && price > 0) { // Must be at least $10M market cap
           // Alternative: estimate from market cap
           const totalShares = marketCap * 1000000 / price // marketCap is in millions
-          estimatedFloat = totalShares * 0.8
-          console.log(`${symbol} float from market cap: ${estimatedFloat} (${(estimatedFloat / 1000000).toFixed(1)}M)`)
+          if (totalShares > 1000000) { // Only use if result is reasonable
+            estimatedFloat = totalShares * 0.8
+            console.log(`${symbol} float from market cap: ${estimatedFloat} (${(estimatedFloat / 1000000).toFixed(1)}M)`)
+          } else {
+            estimatedFloat = null // Force fallback
+          }
         } else {
-          // Fallback: estimate based on price range for testing
+          estimatedFloat = null // Force fallback
+        }
+        
+        // Always use fallback if we don't have a good estimate
+        if (!estimatedFloat || estimatedFloat < 1000000) { // Less than 1M shares
           const estimatedShares = (Math.random() * 20 + 5) * 1000000 // Random 5-25M shares
           estimatedFloat = estimatedShares * 0.8
           console.log(`${symbol} using fallback float estimation: ${estimatedFloat} (${(estimatedFloat / 1000000).toFixed(1)}M)`)

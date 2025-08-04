@@ -178,7 +178,7 @@ serve(async (req) => {
           change: `${gainPercent >= 0 ? '+' : ''}${gainPercent.toFixed(1)}%`,
           volume: volume.toLocaleString(),
           volumeSpike: volumeSpike.toFixed(1) + 'x',
-          float: estimatedFloat ? (estimatedFloat / 1000000).toFixed(1) + 'M' : 'N/A',
+          float: estimatedFloat && !isNaN(estimatedFloat) && estimatedFloat > 0 ? (estimatedFloat / 1000000).toFixed(1) + 'M' : 'N/A',
           catalyst: catalyst || "No recent news",
           gainPercent: gainPercent
         })

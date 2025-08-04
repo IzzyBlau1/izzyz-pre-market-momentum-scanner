@@ -172,6 +172,9 @@ serve(async (req) => {
         // Calculate gain percentage for display
         const gainPercent = previousClose > 0 ? ((price - previousClose) / previousClose) * 100 : 0
         
+        // Debug float value before formatting
+        console.log(`${symbol} - About to format float: estimatedFloat=${estimatedFloat}, isNaN=${isNaN(estimatedFloat)}, type=${typeof estimatedFloat}`)
+        
         // Store stock data with change percentage for sorting
         stocksWithChanges.push({
           symbol,
@@ -180,10 +183,20 @@ serve(async (req) => {
           volume: volume.toLocaleString(),
           volumeSpike: volumeSpike.toFixed(1) + 'x',
           float: (() => {
-            if (!estimatedFloat || isNaN(estimatedFloat) || estimatedFloat <= 0) return 'N/A';
+            console.log(`${symbol} - In float formatter: estimatedFloat=${estimatedFloat}`)
+            if (!estimatedFloat || isNaN(estimatedFloat) || estimatedFloat <= 0) {
+              console.log(`${symbol} - Returning N/A for float`)
+              return 'N/A';
+            }
             const floatInMillions = estimatedFloat / 1000000;
-            if (isNaN(floatInMillions)) return 'N/A';
-            return floatInMillions.toFixed(1) + 'M';
+            console.log(`${symbol} - floatInMillions=${floatInMillions}, isNaN=${isNaN(floatInMillions)}`)
+            if (isNaN(floatInMillions)) {
+              console.log(`${symbol} - floatInMillions is NaN, returning N/A`)
+              return 'N/A';
+            }
+            const result = floatInMillions.toFixed(1) + 'M';
+            console.log(`${symbol} - Final float result: ${result}`)
+            return result;
           })(),
           catalyst: catalyst || "No recent news",
           gainPercent: gainPercent

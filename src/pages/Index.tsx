@@ -101,7 +101,7 @@ const Index = () => {
         changePercent: parseFloat(stock.change.match(/\(([\d.-]+)%\)/)?.[1] || '0'),
         volume: parseInt(stock.volume.replace(/,/g, '')),
         volumeSpike: 2.5, // Default value since API doesn't return this
-        float: `${(stock.float / 1000000).toFixed(1)}M`,
+        float: stock.float, // Use the string value directly from the edge function
         catalyst: stock.catalyst,
         momentum: {
           momo1: {

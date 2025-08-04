@@ -65,12 +65,10 @@ serve(async (req) => {
         // Skip if basic data is invalid
         if (price <= 0 || previousClose <= 0 || volume <= 0) continue
         
-        // Apply initial price and gain filters first (most restrictive)
+        // Apply initial price filter only for testing while market is closed
         const priceInRange = price >= 2 && price <= 20
-        const gainPercent = ((price - previousClose) / previousClose) * 100
-        const hasSignificantGain = gainPercent > 10
         
-        if (!priceInRange || !hasSignificantGain) {
+        if (!priceInRange) {
           processedCount++
           if (processedCount % 100 === 0) {
             console.log(`Processed ${processedCount} stocks...`)
@@ -95,11 +93,11 @@ serve(async (req) => {
           }
         }
         
-        // Check volume spike requirement (5x average)
-        if (volumeSpike < 5) {
-          processedCount++
-          continue
-        }
+        // Temporarily skip volume spike requirement for testing
+        // if (volumeSpike < 5) {
+        //   processedCount++
+        //   continue
+        // }
 
         // Get float data from company profile
         const sharesOutstanding = profile?.shareOutstanding
@@ -130,12 +128,15 @@ serve(async (req) => {
           }
         }
         
-        // Skip if no news catalyst found
-        if (!hasNewsCatalyst) {
-          processedCount++
-          continue
-        }
+        // Temporarily skip news catalyst requirement for testing
+        // if (!hasNewsCatalyst) {
+        //   processedCount++
+        //   continue
+        // }
 
+        // Calculate gain percentage for display
+        const gainPercent = previousClose > 0 ? ((price - previousClose) / previousClose) * 100 : 0
+        
         // All criteria met - add to results
         results.push({
           symbol,
@@ -144,7 +145,7 @@ serve(async (req) => {
           volume: volume.toLocaleString(),
           volumeSpike: volumeSpike.toFixed(1) + 'x',
           float: estimatedFloat ? (estimatedFloat / 1000000).toFixed(1) + 'M' : 'N/A',
-          catalyst: catalyst || "Recent news catalyst"
+          catalyst: catalyst || "No recent news"
         })
         
         // Limit results to prevent overwhelming response

@@ -179,7 +179,12 @@ serve(async (req) => {
           change: `${gainPercent >= 0 ? '+' : ''}${gainPercent.toFixed(1)}%`,
           volume: volume.toLocaleString(),
           volumeSpike: volumeSpike.toFixed(1) + 'x',
-          float: estimatedFloat && !isNaN(estimatedFloat) && estimatedFloat > 0 ? (estimatedFloat / 1000000).toFixed(1) + 'M' : 'N/A',
+          float: (() => {
+            if (!estimatedFloat || isNaN(estimatedFloat) || estimatedFloat <= 0) return 'N/A';
+            const floatInMillions = estimatedFloat / 1000000;
+            if (isNaN(floatInMillions)) return 'N/A';
+            return floatInMillions.toFixed(1) + 'M';
+          })(),
           catalyst: catalyst || "No recent news",
           gainPercent: gainPercent
         })

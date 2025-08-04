@@ -193,13 +193,19 @@ serve(async (req) => {
           volume: volume.toLocaleString(),
           volumeSpike: volumeSpike.toFixed(1) + 'x',
           float: (() => {
+            console.log(`${symbol} - Float calculation: estimatedFloat=${estimatedFloat}`)
             try {
               if (!estimatedFloat || typeof estimatedFloat !== 'number' || !isFinite(estimatedFloat) || estimatedFloat <= 0) {
+                console.log(`${symbol} - Float check failed, returning N/A`)
                 return 'N/A';
               }
-              const result = (estimatedFloat / 1000000).toFixed(1) + 'M';
+              const floatInMillions = estimatedFloat / 1000000;
+              console.log(`${symbol} - Float in millions: ${floatInMillions}`)
+              const result = floatInMillions.toFixed(1) + 'M';
+              console.log(`${symbol} - Final float result: ${result}`)
               return result.includes('NaN') ? 'N/A' : result;
             } catch (e) {
+              console.log(`${symbol} - Float calculation error: ${e}`)
               return 'N/A';
             }
           })(),

@@ -116,6 +116,141 @@ function calculateMoMo1(candles: any) {
   return 'neutral'
 }
 
+// Calculate RSI
+function calculateRSI(prices: number[], period: number = 14): number[] {
+  if (prices.length < period + 1) return []
+  
+  const rsi: number[] = []
+  let gains = 0
+  let losses = 0
+  
+  // Calculate initial average gain and loss
+  for (let i = 1; i <= period; i++) {
+    const change = prices[i] - prices[i - 1]
+    if (change > 0) gains += change
+    else losses -= change
+  }
+  
+  let avgGain = gains / period
+  let avgLoss = losses / period
+  let rs = avgGain / avgLoss
+  rsi.push(100 - (100 / (1 + rs)))
+  
+  // Calculate remaining RSI values
+  for (let i = period + 1; i < prices.length; i++) {
+    const change = prices[i] - prices[i - 1]
+    const gain = change > 0 ? change : 0
+    const loss = change < 0 ? -change : 0
+    
+    avgGain = (avgGain * (period - 1) + gain) / period
+    avgLoss = (avgLoss * (period - 1) + loss) / period
+    rs = avgGain / avgLoss
+    rsi.push(100 - (100 / (1 + rs)))
+  }
+  
+  return rsi
+}
+
+// Calculate Exponential Moving Average  
+function calculateEMA(values: number[], period: number): number[] {
+  if (values.length < period) return []
+  
+  const ema: number[] = []
+  const multiplier = 2 / (period + 1)
+  
+  // Start with SMA for first value
+  let sum = 0
+  for (let i = 0; i < period; i++) {
+    sum += values[i]
+  }
+  ema.push(sum / period)
+  
+  // Calculate EMA for remaining values
+  for (let i = period; i < values.length; i++) {
+    const currentEma = (values[i] * multiplier) + (ema[ema.length - 1] * (1 - multiplier))
+    ema.push(currentEma)
+  }
+  
+  return ema
+}
+
+// Calculate Simple Moving Average
+function calculateSMA(values: number[], period: number): number[] {
+  if (values.length < period) return []
+  
+  const result: number[] = []
+  for (let i = period - 1; i < values.length; i++) {
+    const slice = values.slice(i - period + 1, i + 1)
+    const average = slice.reduce((sum, val) => sum + val, 0) / period
+    result.push(average)
+  }
+  
+  return result
+}
+
+// Calculate MoMo2 (TDI-based) for a specific timeframe
+function calculateMoMo2(candles: any) {
+  if (!candles || !candles.c || candles.c.length < 40) {
+    return 'neutral' // Need enough data for RSI and averages
+  }
+  
+  try {
+    const prices = candles.c
+    
+    // TDI Parameters
+    const RSI_PERIOD = 38
+    const TDI_UPPER_LEVEL = 68
+    const TDI_LOWER_LEVEL = 32
+    const VOLATILITY_BAND = 34
+    const RSI_PRICE_LINE = 2
+    const TRADE_SIGNAL_LINE = 7
+    const STDEV_MULTIPLIER = 1.62
+    
+    // Calculate RSI
+    const rsi = calculateRSI(prices, RSI_PERIOD)
+    if (rsi.length < 2) return 'neutral'
+    
+    // Calculate TDI components
+    const dp = calculateEMA(rsi, RSI_PRICE_LINE) // Price Line
+    const ds = calculateEMA(rsi, TRADE_SIGNAL_LINE) // Signal Line  
+    const da = calculateSMA(rsi, VOLATILITY_BAND) // Average Line
+    
+    if (dp.length < 2 || ds.length < 2 || da.length < 2) return 'neutral'
+    
+    // Get current and previous values
+    const dpCurrent = dp[dp.length - 1]
+    const dpPrevious = dp[dp.length - 2]
+    const dsCurrent = ds[ds.length - 1]
+    const dsPrevious = ds[ds.length - 2]
+    const daCurrent = da[da.length - 1]
+    const daPrevious = da[da.length - 2]
+    
+    // Rising/Falling conditions
+    const DPR = dpCurrent > dpPrevious
+    const DPF = dpCurrent < dpPrevious
+    const DSR = dsCurrent > dsPrevious
+    const DSF = dsCurrent < dsPrevious
+    const DAR = daCurrent > daPrevious
+    const DAF = daCurrent < daPrevious
+    
+    // TDI Signal conditions
+    const TDILONG = dpCurrent > 50 && DPR && dsCurrent > 50 && DSR && daCurrent > 50 && DAR
+    const TDISHORT = dpCurrent < 50 && DPF && dsCurrent < 50 && DSF && daCurrent < 50 && DAF
+    const TDILONG2 = dpCurrent < 50 && DPR && dsCurrent < 50 && DSR && daCurrent < 50 && DAR
+    const TDISHORT2 = dpCurrent > 50 && DPF && dsCurrent > 50 && DSF && daCurrent > 50 && DAF
+    const HOLD = !TDILONG && !TDISHORT && !TDILONG2 && !TDISHORT2
+    
+    // Map to colors: Bullish = green, Bearish = red, Neutral = yellow
+    if (TDILONG || TDILONG2) return 'up' // Green (bullish)
+    if (TDISHORT || TDISHORT2) return 'down' // Red (bearish)
+    return 'neutral' // Yellow (neutral/hold)
+    
+  } catch (error) {
+    console.error('Error calculating MoMo2:', error)
+    return 'neutral'
+  }
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
@@ -230,9 +365,14 @@ serve(async (req) => {
           
           if (response.ok) {
             const data = await response.json()
-            return { timeframe: tf.name, data, signal: calculateMoMo1(data) }
+            return { 
+              timeframe: tf.name, 
+              data, 
+              momo1Signal: calculateMoMo1(data),
+              momo2Signal: calculateMoMo2(data)
+            }
           }
-          return { timeframe: tf.name, data: null, signal: 'neutral' }
+          return { timeframe: tf.name, data: null, momo1Signal: 'neutral', momo2Signal: 'neutral' }
         })
         
         const momentumResults = await Promise.all(momentumPromises)
@@ -240,12 +380,20 @@ serve(async (req) => {
         // Extract momentum signals for each timeframe
         const momentum = {
           momo1: {
-            '1m': momentumResults.find(r => r.timeframe === '1m')?.signal || 'neutral',
-            '5m': momentumResults.find(r => r.timeframe === '5m')?.signal || 'neutral', 
-            '15m': momentumResults.find(r => r.timeframe === '15m')?.signal || 'neutral',
-            '1h': momentumResults.find(r => r.timeframe === '1h')?.signal || 'neutral',
-            '4h': momentumResults.find(r => r.timeframe === '4h')?.signal || 'neutral',
-            'daily': momentumResults.find(r => r.timeframe === 'daily')?.signal || 'neutral'
+            '1m': momentumResults.find(r => r.timeframe === '1m')?.momo1Signal || 'neutral',
+            '5m': momentumResults.find(r => r.timeframe === '5m')?.momo1Signal || 'neutral', 
+            '15m': momentumResults.find(r => r.timeframe === '15m')?.momo1Signal || 'neutral',
+            '1h': momentumResults.find(r => r.timeframe === '1h')?.momo1Signal || 'neutral',
+            '4h': momentumResults.find(r => r.timeframe === '4h')?.momo1Signal || 'neutral',
+            'daily': momentumResults.find(r => r.timeframe === 'daily')?.momo1Signal || 'neutral'
+          },
+          momo2: {
+            '1m': momentumResults.find(r => r.timeframe === '1m')?.momo2Signal || 'neutral',
+            '5m': momentumResults.find(r => r.timeframe === '5m')?.momo2Signal || 'neutral', 
+            '15m': momentumResults.find(r => r.timeframe === '15m')?.momo2Signal || 'neutral',
+            '1h': momentumResults.find(r => r.timeframe === '1h')?.momo2Signal || 'neutral',
+            '4h': momentumResults.find(r => r.timeframe === '4h')?.momo2Signal || 'neutral',
+            'daily': momentumResults.find(r => r.timeframe === 'daily')?.momo2Signal || 'neutral'
           }
         }
         

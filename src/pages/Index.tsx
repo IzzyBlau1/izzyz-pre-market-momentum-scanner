@@ -112,7 +112,7 @@ const Index = () => {
             "4h": "neutral" as const,
             "daily": "neutral" as const
           },
-          momo2: {
+          momo2: stock.momentum?.momo2 || {
             "1m": "neutral" as const,
             "5m": "neutral" as const,
             "15m": "neutral" as const,

@@ -97,20 +97,20 @@ const Index = () => {
       const formattedResults = data.results.map((stock: any) => ({
         symbol: stock.symbol,
         price: parseFloat(stock.price),
-        change: parseFloat(stock.change.split(' ')[0].replace('+', '')),
-        changePercent: parseFloat(stock.change.match(/\(([\d.-]+)%\)/)?.[1] || '0'),
+        change: parseFloat(stock.change.replace(/[+%]/g, '')),
+        changePercent: parseFloat(stock.change.replace(/[+%]/g, '')),
         volume: parseInt(stock.volume.replace(/,/g, '')),
-        volumeSpike: 2.5, // Default value since API doesn't return this
-        float: stock.float, // Use the string value directly from the edge function
+        volumeSpike: parseFloat(stock.volumeSpike?.replace('x', '') || '1'),
+        float: stock.float,
         catalyst: stock.catalyst,
         momentum: {
           momo1: {
-            "1m": "neutral" as const,
+            "1m": stock.momo1 || "neutral" as const,
             "5m": "neutral" as const,
             "15m": "neutral" as const,
             "1h": "neutral" as const,
             "4h": "neutral" as const,
-            "daily": "neutral" as const
+            "daily": stock.momo1 || "neutral" as const
           },
           momo2: {
             "1m": "neutral" as const,
@@ -146,6 +146,7 @@ const Index = () => {
     switch (direction) {
       case "up": return "bg-green-500";
       case "down": return "bg-red-500";
+      case "neutral": return "bg-yellow-500";
       default: return "bg-gray-400";
     }
   };

@@ -80,10 +80,15 @@ serve(async (req) => {
         const previousClose = quote.pc || 0
         
         // Skip if basic data is invalid
-        if (price <= 0 || previousClose <= 0 || volume <= 0) continue
+        if (price <= 0 || previousClose <= 0) {
+          console.log(`Skipping ${symbol}: invalid price data (price: ${price}, prevClose: ${previousClose})`)
+          continue
+        }
         
-        // Apply initial price filter only for testing while market is closed
-        const priceInRange = price >= 2 && price <= 20
+        // For testing, let's be very lenient - any stock with valid data
+        const priceInRange = price >= 1 && price <= 50 // Expanded range for testing
+        
+        console.log(`${symbol}: price=${price}, change=${changePercent}%, volume=${volume}, inRange=${priceInRange}`)
         
         if (!priceInRange) {
           processedCount++

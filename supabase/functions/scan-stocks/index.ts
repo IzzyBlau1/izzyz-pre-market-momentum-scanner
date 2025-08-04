@@ -59,13 +59,10 @@ serve(async (req) => {
         const sharesOutstanding = profile?.shareOutstanding || 50000000 // Default 50M if not available
         const estimatedFloat = sharesOutstanding * 0.8 // Estimate 80% of shares as float
 
-        // Apply scanning criteria
+        // Apply simplified scanning criteria for testing
         const meetsCriteria = 
-          price >= 2 && price <= 20 &&                    // Price range
-          changePercent >= 5 &&                           // Daily gain >= 5%
-          volumeSpike >= 2 &&                            // Volume spike >= 2x
-          estimatedFloat <= 100000000 &&                 // Float <= 100M shares
-          Math.abs(changePercent) >= 3                   // Some volatility (catalyst proxy)
+          price >= 2 && price <= 20 &&                    // Price range $2-$20
+          price > 0                                        // Valid price data
 
         if (meetsCriteria) {
           // Fetch recent news for catalyst

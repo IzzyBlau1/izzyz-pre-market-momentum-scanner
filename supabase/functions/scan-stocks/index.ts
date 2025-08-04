@@ -38,9 +38,11 @@ serve(async (req) => {
     let processedCount = 0
 
     // Process stocks in batches to avoid rate limits and timeouts
-    // Limit to first 200 stocks for testing
+    // Limit to first 200 stocks for testing, then sort by price change
     const stocksToProcess = allStocks.slice(0, 200)
     console.log(`Processing first ${stocksToProcess.length} stocks for testing`)
+    
+    const stocksWithChanges = []
     
     for (const stock of stocksToProcess) {
       const symbol = stock.symbol
@@ -146,30 +148,36 @@ serve(async (req) => {
         // Calculate gain percentage for display
         const gainPercent = previousClose > 0 ? ((price - previousClose) / previousClose) * 100 : 0
         
-        // All criteria met - add to results
-        results.push({
+        // Store stock data with change percentage for sorting
+        stocksWithChanges.push({
           symbol,
           price: price.toFixed(2),
           change: `${gainPercent >= 0 ? '+' : ''}${gainPercent.toFixed(1)}%`,
           volume: volume.toLocaleString(),
           volumeSpike: volumeSpike.toFixed(1) + 'x',
           float: estimatedFloat ? (estimatedFloat / 1000000).toFixed(1) + 'M' : 'N/A',
-          catalyst: catalyst || "No recent news"
+          catalyst: catalyst || "No recent news",
+          gainPercent: gainPercent
         })
-        
-        // Limit results to prevent overwhelming response
-        if (results.length >= 50) {
-          console.log('Reached 50 results limit, stopping scan')
-          break
-        }
       } catch (error) {
         console.error(`Error processing ${symbol}:`, error)
         continue
       }
     }
 
+    // Sort stocks by gain percentage (highest first) and take top 10
+    const topStocks = stocksWithChanges
+      .sort((a, b) => b.gainPercent - a.gainPercent)
+      .slice(0, 10)
+      .map(stock => {
+        const { gainPercent, ...stockWithoutGainPercent } = stock
+        return stockWithoutGainPercent
+      })
+
+    console.log(`Returning top ${topStocks.length} stocks with highest price changes`)
+
     return new Response(
-      JSON.stringify({ results }),
+      JSON.stringify({ results: topStocks }),
       { 
         headers: { 
           ...corsHeaders, 

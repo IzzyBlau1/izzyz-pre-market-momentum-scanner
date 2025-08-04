@@ -83,8 +83,9 @@ serve(async (req) => {
             price: price.toFixed(2),
             change: `${change >= 0 ? '+' : ''}${change.toFixed(2)} (${changePercent.toFixed(1)}%)`,
             volume: volume.toLocaleString(),
-            catalyst,
-            float: estimatedFloat
+            volumeSpike: volumeSpike.toFixed(1) + 'x',
+            float: (estimatedFloat / 1000000).toFixed(1) + 'M',
+            catalyst
           })
         }
       } catch (error) {

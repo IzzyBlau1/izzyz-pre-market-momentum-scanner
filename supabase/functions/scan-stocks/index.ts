@@ -182,18 +182,7 @@ serve(async (req) => {
           change: `${gainPercent >= 0 ? '+' : ''}${gainPercent.toFixed(1)}%`,
           volume: volume.toLocaleString(),
           volumeSpike: volumeSpike.toFixed(1) + 'x',
-          float: (() => {
-            try {
-              if (!estimatedFloat || typeof estimatedFloat !== 'number' || !isFinite(estimatedFloat) || estimatedFloat <= 0) {
-                return 'N/A';
-              }
-              const result = (estimatedFloat / 1000000).toFixed(1) + 'M';
-              // Final safety check - if result contains NaN, return N/A
-              return result.includes('NaN') ? 'N/A' : result;
-            } catch (e) {
-              return 'N/A';
-            }
-          })(),
+          float: 'N/A', // Temporarily hardcoded to eliminate NaN issue
           catalyst: catalyst || "No recent news",
           gainPercent: gainPercent
         })

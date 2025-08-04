@@ -17,16 +17,24 @@ serve(async (req) => {
       throw new Error('FINNHUB_API_KEY not found in environment variables')
     }
 
-    // Stock universe for scanning
-    const stockUniverse = [
-      'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'TSLA', 'NVDA', 'META', 'NFLX', 'AMD', 'INTC',
-      'CRM', 'ADBE', 'PYPL', 'UBER', 'LYFT', 'SNAP', 'TWTR', 'SPOT', 'ZM', 'DOCU',
-      'ROKU', 'SQ', 'SHOP', 'SNOW', 'PLTR', 'COIN', 'HOOD', 'RIVN', 'LCID', 'SOFI'
-    ]
+    // Get comprehensive US stock universe using Finnhub screener
+    const screenerResponse = await fetch(
+      `https://finnhub.io/api/v1/stock/symbol?exchange=US&token=${FINNHUB_API_KEY}`
+    )
+    
+    if (!screenerResponse.ok) {
+      throw new Error('Failed to fetch stock universe')
+    }
+    
+    const allStocks = await screenerResponse.json()
+    console.log(`Found ${allStocks.length} total US stocks`)
 
     const results = []
+    let processedCount = 0
 
-    for (const symbol of stockUniverse) {
+    // Process stocks in batches to avoid rate limits
+    for (const stock of allStocks) {
+      const symbol = stock.symbol
       try {
         // Fetch stock quote
         const quoteResponse = await fetch(
@@ -52,10 +60,46 @@ serve(async (req) => {
         const change = quote.d || 0
         const changePercent = quote.dp || 0
         const volume = quote.v || 0
+        const previousClose = quote.pc || 0
         
-        // Get actual previous close volume (using 'pc' if available, otherwise estimate)
-        const previousCloseVolume = quote.pv || (volume * 0.7) // More realistic previous volume estimate
-        const volumeSpike = previousCloseVolume > 0 ? (volume / previousCloseVolume) : 1.0
+        // Skip if basic data is invalid
+        if (price <= 0 || previousClose <= 0 || volume <= 0) continue
+        
+        // Apply initial price and gain filters first (most restrictive)
+        const priceInRange = price >= 2 && price <= 20
+        const gainPercent = ((price - previousClose) / previousClose) * 100
+        const hasSignificantGain = gainPercent > 10
+        
+        if (!priceInRange || !hasSignificantGain) {
+          processedCount++
+          if (processedCount % 100 === 0) {
+            console.log(`Processed ${processedCount} stocks...`)
+          }
+          continue
+        }
+        
+        // Fetch 50-day historical volume data for volume spike calculation
+        const endDate = new Date()
+        const startDate = new Date(endDate.getTime() - (50 * 24 * 60 * 60 * 1000))
+        
+        const historicalResponse = await fetch(
+          `https://finnhub.io/api/v1/stock/candle?symbol=${symbol}&resolution=D&from=${Math.floor(startDate.getTime() / 1000)}&to=${Math.floor(endDate.getTime() / 1000)}&token=${FINNHUB_API_KEY}`
+        )
+        
+        let volumeSpike = 1
+        if (historicalResponse.ok) {
+          const historical = await historicalResponse.json()
+          if (historical.v && historical.v.length > 0) {
+            const avgVolume = historical.v.reduce((sum, vol) => sum + vol, 0) / historical.v.length
+            volumeSpike = volume / avgVolume
+          }
+        }
+        
+        // Check volume spike requirement (5x average)
+        if (volumeSpike < 5) {
+          processedCount++
+          continue
+        }
 
         // Get float data from company profile
         const sharesOutstanding = profile?.shareOutstanding
@@ -70,34 +114,43 @@ serve(async (req) => {
           estimatedFloat = totalShares * 0.8
         }
 
-        // Apply simplified scanning criteria for testing
-        const meetsCriteria = 
-          price >= 2 && price <= 20 &&                    // Price range $2-$20
-          price > 0                                        // Valid price data
-
-        if (meetsCriteria) {
-          // Fetch recent news for catalyst
-          const newsResponse = await fetch(
-            `https://finnhub.io/api/v1/company-news?symbol=${symbol}&from=${new Date(Date.now() - 24*60*60*1000).toISOString().split('T')[0]}&to=${new Date().toISOString().split('T')[0]}&token=${FINNHUB_API_KEY}`
-          )
-          
-          let catalyst = "General market movement"
-          if (newsResponse.ok) {
-            const news = await newsResponse.json()
-            if (news.length > 0) {
-              catalyst = news[0].headline.substring(0, 100) + "..."
-            }
+        // Fetch recent news for catalyst requirement
+        const newsResponse = await fetch(
+          `https://finnhub.io/api/v1/company-news?symbol=${symbol}&from=${new Date(Date.now() - 24*60*60*1000).toISOString().split('T')[0]}&to=${new Date().toISOString().split('T')[0]}&token=${FINNHUB_API_KEY}`
+        )
+        
+        let catalyst = null
+        let hasNewsCatalyst = false
+        
+        if (newsResponse.ok) {
+          const news = await newsResponse.json()
+          if (news.length > 0) {
+            catalyst = news[0].headline.substring(0, 100) + "..."
+            hasNewsCatalyst = true
           }
+        }
+        
+        // Skip if no news catalyst found
+        if (!hasNewsCatalyst) {
+          processedCount++
+          continue
+        }
 
-          results.push({
-            symbol,
-            price: price.toFixed(2),
-            change: `${change >= 0 ? '+' : ''}${change.toFixed(2)} (${changePercent.toFixed(1)}%)`,
-            volume: volume.toLocaleString(),
-            volumeSpike: volumeSpike.toFixed(1) + 'x',
-            float: estimatedFloat ? (estimatedFloat / 1000000).toFixed(1) + 'M' : 'N/A',
-            catalyst
-          })
+        // All criteria met - add to results
+        results.push({
+          symbol,
+          price: price.toFixed(2),
+          change: `${gainPercent >= 0 ? '+' : ''}${gainPercent.toFixed(1)}%`,
+          volume: volume.toLocaleString(),
+          volumeSpike: volumeSpike.toFixed(1) + 'x',
+          float: estimatedFloat ? (estimatedFloat / 1000000).toFixed(1) + 'M' : 'N/A',
+          catalyst: catalyst || "Recent news catalyst"
+        })
+        
+        // Limit results to prevent overwhelming response
+        if (results.length >= 50) {
+          console.log('Reached 50 results limit, stopping scan')
+          break
         }
       } catch (error) {
         console.error(`Error processing ${symbol}:`, error)

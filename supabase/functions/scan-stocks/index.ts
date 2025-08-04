@@ -407,11 +407,11 @@ serve(async (req) => {
         
         console.log(`${symbol} MoMo1 signals:`, momentum.momo1)
         
-        // Temporarily skip volume spike requirement for testing
-        // if (volumeSpike < 5) {
-        //   processedCount++
-        //   continue
-        // }
+        // Require minimum volume spike
+        if (volumeSpike < 5) {
+          processedCount++
+          continue
+        }
 
         // Get float data from company profile
         const sharesOutstanding = profile?.shareOutstanding
@@ -444,11 +444,11 @@ serve(async (req) => {
           estimatedFloat = null // Force fallback
         }
         
-        // Always use fallback if we don't have a good estimate
-        if (!estimatedFloat || estimatedFloat < 1000000) { // Less than 1M shares
-          const estimatedShares = (Math.random() * 20 + 5) * 1000000 // Random 5-25M shares
-          estimatedFloat = estimatedShares * 0.8
-          console.log(`${symbol} using fallback float estimation: ${estimatedFloat} (${(estimatedFloat / 1000000).toFixed(1)}M)`)
+        // Require valid float data - no fallback estimates allowed
+        if (!estimatedFloat || estimatedFloat < 1000000 || estimatedFloat > 10000000) { // Must be 1M-10M shares
+          console.log(`${symbol} - Float requirement not met: ${estimatedFloat ? (estimatedFloat / 1000000).toFixed(1) + 'M' : 'N/A'}`)
+          processedCount++
+          continue
         }
         
         // Ensure estimatedFloat is a valid number before using it
@@ -473,11 +473,11 @@ serve(async (req) => {
           }
         }
         
-        // Temporarily skip news catalyst requirement for testing
-        // if (!hasNewsCatalyst) {
-        //   processedCount++
-        //   continue
-        // }
+        // Require news catalyst - all stocks must have recent news
+        if (!hasNewsCatalyst) {
+          processedCount++
+          continue
+        }
 
         // Calculate gain percentage for display
         const gainPercent = previousClose > 0 ? ((price - previousClose) / previousClose) * 100 : 0
@@ -519,10 +519,10 @@ serve(async (req) => {
       }
     }
 
-    // Sort stocks by gain percentage (highest first) and take top 10
+    // Sort stocks by gain percentage (highest first) and take top 15
     const topStocks = stocksWithChanges
       .sort((a, b) => b.gainPercent - a.gainPercent)
-      .slice(0, 10)
+      .slice(0, 15)
       .map(stock => {
         const { gainPercent, ...stockWithoutGainPercent } = stock
         return stockWithoutGainPercent

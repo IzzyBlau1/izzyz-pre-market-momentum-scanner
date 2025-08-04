@@ -184,13 +184,16 @@ serve(async (req) => {
           volumeSpike: volumeSpike.toFixed(1) + 'x',
           float: (() => {
             console.log(`${symbol} - In float formatter: estimatedFloat=${estimatedFloat}`)
-            if (!estimatedFloat || isNaN(estimatedFloat) || estimatedFloat <= 0) {
-              console.log(`${symbol} - Returning N/A for float`)
+            // Force string check for NaN
+            const floatStr = String(estimatedFloat);
+            if (floatStr === 'NaN' || !estimatedFloat || isNaN(estimatedFloat) || estimatedFloat <= 0) {
+              console.log(`${symbol} - Returning N/A for float (string check: ${floatStr})`)
               return 'N/A';
             }
             const floatInMillions = estimatedFloat / 1000000;
-            console.log(`${symbol} - floatInMillions=${floatInMillions}, isNaN=${isNaN(floatInMillions)}`)
-            if (isNaN(floatInMillions)) {
+            const millionsStr = String(floatInMillions);
+            console.log(`${symbol} - floatInMillions=${floatInMillions}, string=${millionsStr}, isNaN=${isNaN(floatInMillions)}`)
+            if (millionsStr === 'NaN' || isNaN(floatInMillions)) {
               console.log(`${symbol} - floatInMillions is NaN, returning N/A`)
               return 'N/A';
             }

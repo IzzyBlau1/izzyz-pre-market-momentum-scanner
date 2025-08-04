@@ -23,12 +23,18 @@ serve(async (req) => {
     console.log('API key found, starting scan...')
 
     // Get comprehensive US stock universe using Finnhub screener
+    console.log('Fetching stock universe from Finnhub...')
     const screenerResponse = await fetch(
       `https://finnhub.io/api/v1/stock/symbol?exchange=US&token=${FINNHUB_API_KEY}`
     )
     
+    console.log('Screener response status:', screenerResponse.status)
+    console.log('Screener response headers:', Object.fromEntries(screenerResponse.headers.entries()))
+    
     if (!screenerResponse.ok) {
-      throw new Error('Failed to fetch stock universe')
+      const errorText = await screenerResponse.text()
+      console.error('Finnhub API error:', errorText)
+      throw new Error(`Failed to fetch stock universe: ${screenerResponse.status} - ${errorText}`)
     }
     
     const allStocks = await screenerResponse.json()

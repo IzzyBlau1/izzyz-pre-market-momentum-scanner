@@ -12,10 +12,15 @@ serve(async (req) => {
   }
 
   try {
+    console.log('Function called, checking environment...')
+    
     const FINNHUB_API_KEY = Deno.env.get('FINNHUB_API_KEY')
     if (!FINNHUB_API_KEY) {
+      console.error('FINNHUB_API_KEY not found in environment variables')
       throw new Error('FINNHUB_API_KEY not found in environment variables')
     }
+    
+    console.log('API key found, starting scan...')
 
     // Get comprehensive US stock universe using Finnhub screener
     const screenerResponse = await fetch(
@@ -32,8 +37,12 @@ serve(async (req) => {
     const results = []
     let processedCount = 0
 
-    // Process stocks in batches to avoid rate limits
-    for (const stock of allStocks) {
+    // Process stocks in batches to avoid rate limits and timeouts
+    // Limit to first 200 stocks for testing
+    const stocksToProcess = allStocks.slice(0, 200)
+    console.log(`Processing first ${stocksToProcess.length} stocks for testing`)
+    
+    for (const stock of stocksToProcess) {
       const symbol = stock.symbol
       try {
         // Fetch stock quote

@@ -2,9 +2,8 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { StockScannerService } from "@/services/stockScanner";
+import { supabase } from "@/integrations/supabase/client";
 
 interface StockScan {
   symbol: string;
@@ -39,7 +38,6 @@ const Index = () => {
   const [isScanning, setIsScanning] = useState(false);
   const [scanResults, setScanResults] = useState<StockScan[]>([]);
   const [lastScan, setLastScan] = useState<Date | null>(null);
-  const [apiKey, setApiKey] = useState("");
   const { toast } = useToast();
 
   const mockData: StockScan[] = [
@@ -88,25 +86,23 @@ const Index = () => {
   ];
 
   const handleScan = async () => {
-    if (!apiKey.trim()) {
-      toast({
-        title: "API Key Required",
-        description: "Please enter your Finnhub API key to scan stocks.",
-        variant: "destructive",
-      });
-      return;
-    }
-
     setIsScanning(true);
     
     try {
-      const scanner = new StockScannerService(apiKey);
-      const results = await scanner.scanStocks();
+      const { data, error } = await supabase.functions.invoke('scan-stocks');
+      
+      if (error) throw error;
       
       // Convert results to match our interface
-      const formattedResults = results.map(stock => ({
-        ...stock,
+      const formattedResults = data.results.map((stock: any) => ({
+        symbol: stock.symbol,
+        price: parseFloat(stock.price),
+        change: parseFloat(stock.change.split(' ')[0].replace('+', '')),
+        changePercent: parseFloat(stock.change.match(/\(([\d.-]+)%\)/)?.[1] || '0'),
+        volume: parseInt(stock.volume.replace(/,/g, '')),
+        volumeSpike: 2.5, // Default value since API doesn't return this
         float: `${(stock.float / 1000000).toFixed(1)}M`,
+        catalyst: stock.catalyst,
         momentum: {
           momo1: {
             "1m": "neutral" as const,
@@ -132,13 +128,13 @@ const Index = () => {
       
       toast({
         title: "Scan Complete",
-        description: `Found ${results.length} qualifying stocks.`,
+        description: `Found ${data.results.length} qualifying stocks.`,
       });
     } catch (error) {
       console.error('Scan error:', error);
       toast({
         title: "Scan Failed",
-        description: "Error scanning stocks. Please check your API key and try again.",
+        description: "Error scanning stocks. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -165,23 +161,14 @@ const Index = () => {
           <p className="text-xl text-muted-foreground mb-4">
             AI-Enhanced Pre-Market Stock Scanner ($2-$20 Range)
           </p>
-          <div className="flex justify-center gap-3 items-center mb-4">
-            <Input
-              type="password"
-              placeholder="Enter Finnhub API Key"
-              value={apiKey}
-              onChange={(e) => setApiKey(e.target.value)}
-              className="w-64"
-            />
-            <Button 
-              onClick={handleScan} 
-              disabled={isScanning || !apiKey.trim()}
-              size="lg"
-              className="bg-primary hover:bg-primary/90"
-            >
-              {isScanning ? "Scanning..." : "SCAN"}
-            </Button>
-          </div>
+          <Button 
+            onClick={handleScan} 
+            disabled={isScanning}
+            size="lg"
+            className="bg-primary hover:bg-primary/90 mb-4"
+          >
+            {isScanning ? "Scanning..." : "SCAN"}
+          </Button>
           {lastScan && (
             <p className="text-sm text-muted-foreground mt-2">
               Last scan: {lastScan.toLocaleTimeString()}

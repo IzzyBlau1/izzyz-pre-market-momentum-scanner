@@ -126,12 +126,18 @@ serve(async (req) => {
         const marketCap = profile?.marketCapitalization
         let estimatedFloat = null
         
+        console.log(`${symbol} profile data: sharesOutstanding=${sharesOutstanding}, marketCap=${marketCap}`)
+        
         if (sharesOutstanding && !isNaN(sharesOutstanding)) {
           estimatedFloat = sharesOutstanding * 0.8 // Estimate 80% of shares as float
+          console.log(`${symbol} float from shares: ${estimatedFloat} (${(estimatedFloat / 1000000).toFixed(1)}M)`)
         } else if (marketCap && price > 0) {
           // Alternative: estimate from market cap
           const totalShares = marketCap * 1000000 / price // marketCap is in millions
           estimatedFloat = totalShares * 0.8
+          console.log(`${symbol} float from market cap: ${estimatedFloat} (${(estimatedFloat / 1000000).toFixed(1)}M)`)
+        } else {
+          console.log(`${symbol} no float data available`)
         }
 
         // Fetch recent news for catalyst requirement

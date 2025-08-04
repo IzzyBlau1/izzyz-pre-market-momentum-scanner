@@ -52,12 +52,23 @@ serve(async (req) => {
         const change = quote.d || 0
         const changePercent = quote.dp || 0
         const volume = quote.v || 0
-        const previousVolume = quote.v ? quote.v * 0.8 : 0 // Estimate previous volume
-        const volumeSpike = previousVolume > 0 ? volume / previousVolume : 1
+        
+        // Get actual previous close volume (using 'pc' if available, otherwise estimate)
+        const previousCloseVolume = quote.pv || (volume * 0.7) // More realistic previous volume estimate
+        const volumeSpike = previousCloseVolume > 0 ? (volume / previousCloseVolume) : 1.0
 
-        // Estimate float (using shares outstanding as proxy)
-        const sharesOutstanding = profile?.shareOutstanding || 50000000 // Default 50M if not available
-        const estimatedFloat = sharesOutstanding * 0.8 // Estimate 80% of shares as float
+        // Get float data from company profile
+        const sharesOutstanding = profile?.shareOutstanding
+        const marketCap = profile?.marketCapitalization
+        let estimatedFloat = null
+        
+        if (sharesOutstanding && !isNaN(sharesOutstanding)) {
+          estimatedFloat = sharesOutstanding * 0.8 // Estimate 80% of shares as float
+        } else if (marketCap && price > 0) {
+          // Alternative: estimate from market cap
+          const totalShares = marketCap * 1000000 / price // marketCap is in millions
+          estimatedFloat = totalShares * 0.8
+        }
 
         // Apply simplified scanning criteria for testing
         const meetsCriteria = 
@@ -84,7 +95,7 @@ serve(async (req) => {
             change: `${change >= 0 ? '+' : ''}${change.toFixed(2)} (${changePercent.toFixed(1)}%)`,
             volume: volume.toLocaleString(),
             volumeSpike: volumeSpike.toFixed(1) + 'x',
-            float: (estimatedFloat / 1000000).toFixed(1) + 'M',
+            float: estimatedFloat ? (estimatedFloat / 1000000).toFixed(1) + 'M' : 'N/A',
             catalyst
           })
         }

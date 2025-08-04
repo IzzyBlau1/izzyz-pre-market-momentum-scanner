@@ -93,7 +93,7 @@ const Index = () => {
       
       if (error) throw error;
       
-      // Convert results to match our interface
+      // Convert results to match our interface  
       const formattedResults = data.results.map((stock: any) => ({
         symbol: stock.symbol,
         price: parseFloat(stock.price),
@@ -104,13 +104,13 @@ const Index = () => {
         float: stock.float,
         catalyst: stock.catalyst,
         momentum: {
-          momo1: {
-            "1m": stock.momo1 || "neutral" as const,
-            "5m": "neutral" as const,
+          momo1: stock.momentum?.momo1 || {
+            "1m": "neutral" as const,
+            "5m": "neutral" as const, 
             "15m": "neutral" as const,
             "1h": "neutral" as const,
             "4h": "neutral" as const,
-            "daily": stock.momo1 || "neutral" as const
+            "daily": "neutral" as const
           },
           momo2: {
             "1m": "neutral" as const,

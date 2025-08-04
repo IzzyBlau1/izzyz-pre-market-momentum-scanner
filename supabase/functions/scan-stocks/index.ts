@@ -208,28 +208,56 @@ serve(async (req) => {
           continue
         }
         
-        // Fetch 50-day historical data for volume spike calculation and momentum analysis
+        // Fetch multi-timeframe historical data for momentum analysis
         const endDate = new Date()
-        const startDate = new Date(endDate.getTime() - (50 * 24 * 60 * 60 * 1000))
+        const startDate = new Date(endDate.getTime() - (50 * 24 * 60 * 60 * 1000)) // 50 days for daily analysis
         
-        const historicalResponse = await fetch(
-          `https://finnhub.io/api/v1/stock/candle?symbol=${symbol}&resolution=D&from=${Math.floor(startDate.getTime() / 1000)}&to=${Math.floor(endDate.getTime() / 1000)}&token=${FINNHUB_API_KEY}`
-        )
+        // Fetch multiple timeframes in parallel
+        const timeframes = [
+          { resolution: '1', days: 2, name: '1m' },    // 1-min data for 2 days
+          { resolution: '5', days: 5, name: '5m' },    // 5-min data for 5 days  
+          { resolution: '15', days: 10, name: '15m' }, // 15-min data for 10 days
+          { resolution: '60', days: 20, name: '1h' },  // 1-hour data for 20 days
+          { resolution: '240', days: 40, name: '4h' }, // 4-hour data for 40 days
+          { resolution: 'D', days: 50, name: 'daily' } // Daily data for 50 days
+        ]
         
-        let volumeSpike = 1
-        let momo1Signal = 'neutral'
+        const momentumPromises = timeframes.map(async (tf) => {
+          const tfStartDate = new Date(endDate.getTime() - (tf.days * 24 * 60 * 60 * 1000))
+          const response = await fetch(
+            `https://finnhub.io/api/v1/stock/candle?symbol=${symbol}&resolution=${tf.resolution}&from=${Math.floor(tfStartDate.getTime() / 1000)}&to=${Math.floor(endDate.getTime() / 1000)}&token=${FINNHUB_API_KEY}`
+          )
+          
+          if (response.ok) {
+            const data = await response.json()
+            return { timeframe: tf.name, data, signal: calculateMoMo1(data) }
+          }
+          return { timeframe: tf.name, data: null, signal: 'neutral' }
+        })
         
-        if (historicalResponse.ok) {
-          const historical = await historicalResponse.json()
-          if (historical.v && historical.v.length > 0) {
-            const avgVolume = historical.v.reduce((sum, vol) => sum + vol, 0) / historical.v.length
-            volumeSpike = volume / avgVolume
-            
-            // Calculate MoMo1 momentum using historical data
-            momo1Signal = calculateMoMo1(historical)
-            console.log(`${symbol} MoMo1 signal: ${momo1Signal}`)
+        const momentumResults = await Promise.all(momentumPromises)
+        
+        // Extract momentum signals for each timeframe
+        const momentum = {
+          momo1: {
+            '1m': momentumResults.find(r => r.timeframe === '1m')?.signal || 'neutral',
+            '5m': momentumResults.find(r => r.timeframe === '5m')?.signal || 'neutral', 
+            '15m': momentumResults.find(r => r.timeframe === '15m')?.signal || 'neutral',
+            '1h': momentumResults.find(r => r.timeframe === '1h')?.signal || 'neutral',
+            '4h': momentumResults.find(r => r.timeframe === '4h')?.signal || 'neutral',
+            'daily': momentumResults.find(r => r.timeframe === 'daily')?.signal || 'neutral'
           }
         }
+        
+        // Calculate volume spike from daily data
+        let volumeSpike = 1
+        const dailyData = momentumResults.find(r => r.timeframe === 'daily')?.data
+        if (dailyData && dailyData.v && dailyData.v.length > 0) {
+          const avgVolume = dailyData.v.reduce((sum, vol) => sum + vol, 0) / dailyData.v.length
+          volumeSpike = volume / avgVolume
+        }
+        
+        console.log(`${symbol} MoMo1 signals:`, momentum.momo1)
         
         // Temporarily skip volume spike requirement for testing
         // if (volumeSpike < 5) {
@@ -334,7 +362,7 @@ serve(async (req) => {
             }
           })(),
           catalyst: catalyst || "No recent news",
-          momo1: momo1Signal,
+          momentum: momentum,
           gainPercent: gainPercent
         })
       } catch (error) {

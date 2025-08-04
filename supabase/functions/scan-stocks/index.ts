@@ -86,7 +86,7 @@ serve(async (req) => {
         }
         
         // For testing, let's be very lenient - any stock with valid data
-        const priceInRange = price >= 1 && price <= 50 // Expanded range for testing
+        const priceInRange = price >= 2 && price <= 20 // Back to original $2-$20 range
         
         console.log(`${symbol}: price=${price}, change=${changePercent}%, volume=${volume}, inRange=${priceInRange}`)
         

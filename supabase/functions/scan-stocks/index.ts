@@ -6,6 +6,116 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+// MoMo1 Momentum Calculation Functions
+function calculateStochastic(highs: number[], lows: number[], closes: number[], kPeriod: number, dPeriod: number) {
+  if (closes.length < kPeriod + dPeriod) return { k: [], d: [] }
+  
+  const kValues = []
+  const dValues = []
+  
+  for (let i = kPeriod - 1; i < closes.length; i++) {
+    const periodHighs = highs.slice(i - kPeriod + 1, i + 1)
+    const periodLows = lows.slice(i - kPeriod + 1, i + 1)
+    
+    const highestHigh = Math.max(...periodHighs)
+    const lowestLow = Math.min(...periodLows)
+    
+    if (highestHigh === lowestLow) {
+      kValues.push(50) // Neutral when no range
+    } else {
+      const k = ((closes[i] - lowestLow) / (highestHigh - lowestLow)) * 100
+      kValues.push(k)
+    }
+  }
+  
+  // Calculate D values (SMA of K values)
+  for (let i = dPeriod - 1; i < kValues.length; i++) {
+    const dPeriodKs = kValues.slice(i - dPeriod + 1, i + 1)
+    const d = dPeriodKs.reduce((sum, k) => sum + k, 0) / dPeriod
+    dValues.push(d)
+  }
+  
+  return { k: kValues, d: dValues }
+}
+
+function calculateWilliamsR(highs: number[], lows: number[], closes: number[], period: number) {
+  if (closes.length < period) return []
+  
+  const wrValues = []
+  
+  for (let i = period - 1; i < closes.length; i++) {
+    const periodHighs = highs.slice(i - period + 1, i + 1)
+    const periodLows = lows.slice(i - period + 1, i + 1)
+    
+    const highestHigh = Math.max(...periodHighs)
+    const lowestLow = Math.min(...periodLows)
+    
+    if (highestHigh === lowestLow) {
+      wrValues.push(-50) // Neutral when no range
+    } else {
+      const wr = ((highestHigh - closes[i]) / (highestHigh - lowestLow)) * (-100)
+      wrValues.push(wr)
+    }
+  }
+  
+  return wrValues
+}
+
+function calculateMoMo1(candles: any) {
+  if (!candles || !candles.h || !candles.l || !candles.c || candles.c.length < 50) {
+    return 'neutral'
+  }
+  
+  const highs = candles.h
+  const lows = candles.l
+  const closes = candles.c
+  
+  // Calculate Fast Stochastic (8/3)
+  const stoch8 = calculateStochastic(highs, lows, closes, 8, 3)
+  
+  // Calculate Slow Stochastic (38/3)
+  const stoch38 = calculateStochastic(highs, lows, closes, 38, 3)
+  
+  // Calculate Williams %R (38 period)
+  const wr = calculateWilliamsR(highs, lows, closes, 38)
+  
+  // Need at least 2 data points to determine direction
+  if (stoch8.d.length < 2 || stoch38.d.length < 2 || wr.length < 2) {
+    return 'neutral'
+  }
+  
+  // Get latest values
+  const stoch8K = stoch8.k[stoch8.k.length - 1]
+  const stoch8KPrev = stoch8.k[stoch8.k.length - 2]
+  const stoch8D = stoch8.d[stoch8.d.length - 1]
+  const stoch8DPrev = stoch8.d[stoch8.d.length - 2]
+  
+  const stoch38K = stoch38.k[stoch38.k.length - 1]
+  const stoch38KPrev = stoch38.k[stoch38.k.length - 2]
+  const stoch38D = stoch38.d[stoch38.d.length - 1]
+  const stoch38DPrev = stoch38.d[stoch38.d.length - 2]
+  
+  const wrCurrent = wr[wr.length - 1]
+  const wrPrev = wr[wr.length - 2]
+  
+  // Calculate signals based on ThinkScript logic
+  const stoch8Long = stoch8D > stoch8DPrev && stoch8K > stoch8KPrev
+  const stoch8Short = stoch8D < stoch8DPrev && stoch8K < stoch8KPrev
+  const stoch38Long = stoch38D > stoch38DPrev && stoch38K > stoch38KPrev
+  const stoch38Short = stoch38D < stoch38DPrev && stoch38K < stoch38KPrev
+  
+  const wrUp = wrCurrent > -90 && wrCurrent > wrPrev
+  const wrDown = wrCurrent < -10 && wrCurrent < wrPrev
+  
+  // Combined signals
+  const comboLong = stoch8Long && stoch38Long && wrUp
+  const comboShort = stoch8Short && stoch38Short && wrDown
+  
+  if (comboLong) return 'up'
+  if (comboShort) return 'down'
+  return 'neutral'
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
@@ -98,7 +208,7 @@ serve(async (req) => {
           continue
         }
         
-        // Fetch 50-day historical volume data for volume spike calculation
+        // Fetch 50-day historical data for volume spike calculation and momentum analysis
         const endDate = new Date()
         const startDate = new Date(endDate.getTime() - (50 * 24 * 60 * 60 * 1000))
         
@@ -107,11 +217,17 @@ serve(async (req) => {
         )
         
         let volumeSpike = 1
+        let momo1Signal = 'neutral'
+        
         if (historicalResponse.ok) {
           const historical = await historicalResponse.json()
           if (historical.v && historical.v.length > 0) {
             const avgVolume = historical.v.reduce((sum, vol) => sum + vol, 0) / historical.v.length
             volumeSpike = volume / avgVolume
+            
+            // Calculate MoMo1 momentum using historical data
+            momo1Signal = calculateMoMo1(historical)
+            console.log(`${symbol} MoMo1 signal: ${momo1Signal}`)
           }
         }
         
@@ -218,6 +334,7 @@ serve(async (req) => {
             }
           })(),
           catalyst: catalyst || "No recent news",
+          momo1: momo1Signal,
           gainPercent: gainPercent
         })
       } catch (error) {

@@ -126,7 +126,8 @@ serve(async (req) => {
         const marketCap = profile?.marketCapitalization
         let estimatedFloat = null
         
-        console.log(`${symbol} profile data: sharesOutstanding=${sharesOutstanding}, marketCap=${marketCap}`)
+        console.log(`${symbol} raw profile data:`, JSON.stringify(profile))
+        console.log(`${symbol} profile data: sharesOutstanding=${sharesOutstanding} (type: ${typeof sharesOutstanding}), marketCap=${marketCap} (type: ${typeof marketCap})`)
         
         if (sharesOutstanding && !isNaN(sharesOutstanding) && sharesOutstanding > 0) {
           estimatedFloat = sharesOutstanding * 0.8 // Estimate 80% of shares as float

@@ -123,82 +123,49 @@ function getActiveFutures(): Array<{symbol: string, name: string, expiration: st
   ];
 }
 
-// Fetch real-time futures quote with multiple data sources
+// Get real futures data from Yahoo Finance (free and reliable)
 async function fetchFuturesQuote(symbol: string, apiKey: string) {
-  console.log(`🔗 Trying multiple data sources for ${symbol}...`);
-  
-  // Try different symbol formats for Finnhub
-  const symbolVariants = [
-    symbol, // Original like "NQ=F"
-    symbol.replace('=F', ''), // Remove =F -> "NQ"  
-    symbol.replace('=F', '1!'), // Try CME format -> "NQ1!"
-    symbol.replace('=F', 'H25'), // Try specific contract -> "NQH25"
-    symbol.replace('=F', 'MAR2025'), // Try month format
-    `CME:${symbol}`, // Try exchange prefix
-    `CBOT:${symbol}`,
-    `CME_MINI:${symbol.replace('=F', '')}`,
-  ];
-
-  for (const testSymbol of symbolVariants) {
-    try {
-      console.log(`🔍 Testing symbol: ${testSymbol}`);
-      const response = await fetch(`https://finnhub.io/api/v1/quote?symbol=${testSymbol}&token=${apiKey}`);
-      
-      if (response.ok) {
-        const data = await response.json();
-        console.log(`📊 Response for ${testSymbol}:`, JSON.stringify(data, null, 2));
-        
-        // Check if we got real data (not zeros)
-        if (data.c && data.c > 0 && data.pc && data.pc > 0) {
-          console.log(`✅ SUCCESS! Found real data with symbol: ${testSymbol}`);
-          console.log(`💰 Price: ${data.c}, Previous: ${data.pc}`);
-          return data;
-        }
-      }
-      
-      // Add delay between requests to avoid rate limiting  
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
-    } catch (error) {
-      console.error(`❌ Error with ${testSymbol}:`, error);
-    }
-  }
-
-  // If Finnhub fails, try Alpha Vantage as backup
-  console.log(`🔄 Finnhub failed, trying Alpha Vantage...`);
   try {
-    // Alpha Vantage doesn't need API key for basic quotes, but has different symbol format
-    const baseSymbol = symbol.replace('=F', '').replace('U25', '');
-    const alphaSymbol = baseSymbol === 'NQ' ? 'QQQ' : baseSymbol === 'ES' ? 'SPY' : baseSymbol; // Use ETF proxies
+    // Convert our symbols to Yahoo Finance format
+    let yahooSymbol = '';
+    if (symbol === 'NQ=F') yahooSymbol = 'NQ=F';
+    else if (symbol === 'ES=F') yahooSymbol = 'ES=F'; 
+    else if (symbol === 'YM=F') yahooSymbol = 'YM=F';
+    else if (symbol === 'RTY=F') yahooSymbol = 'RTY=F';
+    else if (symbol === 'VIX') yahooSymbol = '%5EVIX';
     
-    const alphaResponse = await fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${alphaSymbol}&apikey=demo`);
-    if (alphaResponse.ok) {
-      const alphaData = await alphaResponse.json();
-      console.log(`📊 Alpha Vantage response:`, JSON.stringify(alphaData, null, 2));
+    console.log(`🔗 Fetching real data from Yahoo Finance for ${yahooSymbol}`);
+    
+    const response = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${yahooSymbol}`);
+    
+    if (!response.ok) {
+      throw new Error(`Yahoo Finance API error: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    console.log(`📊 Yahoo Finance response for ${yahooSymbol}:`, JSON.stringify(data, null, 2));
+    
+    if (data.chart?.result?.[0]?.meta) {
+      const meta = data.chart.result[0].meta;
+      const currentPrice = meta.regularMarketPrice || meta.previousClose;
+      const previousClose = meta.chartPreviousClose || meta.previousClose;
       
-      if (alphaData['Global Quote']) {
-        const quote = alphaData['Global Quote'];
-        const current = parseFloat(quote['05. price']);
-        const previous = parseFloat(quote['08. previous close']);
-        
-        if (current > 0) {
-          console.log(`✅ Alpha Vantage SUCCESS! ${alphaSymbol}: ${current}`);
-          // Scale ETF price to futures equivalent
-          const multiplier = baseSymbol === 'NQ' ? 100 : baseSymbol === 'ES' ? 12.5 : 1;
-          return {
-            c: current * multiplier,
-            pc: previous * multiplier,
-            v: 100000 // Mock volume
-          };
-        }
+      if (currentPrice && currentPrice > 0) {
+        console.log(`✅ SUCCESS! Yahoo Finance data: ${currentPrice}`);
+        return {
+          c: currentPrice,
+          pc: previousClose || currentPrice * 0.99,
+          v: 100000 // Yahoo doesn't always provide volume
+        };
       }
     }
+    
+    throw new Error('No valid data from Yahoo Finance');
+    
   } catch (error) {
-    console.error(`❌ Alpha Vantage error:`, error);
+    console.error(`❌ Yahoo Finance failed for ${symbol}:`, error);
+    return null;
   }
-
-  console.log(`❌ All data sources failed for ${symbol}`);
-  return null;
 }
 
 // Calculate simple momentum based on price action

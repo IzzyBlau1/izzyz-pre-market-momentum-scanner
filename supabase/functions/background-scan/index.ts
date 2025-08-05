@@ -83,42 +83,42 @@ function getExpirationDate(month: string, year: number): string {
 function getActiveFutures(): Array<{symbol: string, name: string, expiration: string, contractMonth: string, finnhubSymbol: string}> {
   const { contractMonth, monthCode, yearSuffix, expirationDate } = getCurrentContractInfo();
   
-  // For demo purposes, let's use mock data since Finnhub futures symbols might need different format
+  // Using correct Finnhub futures symbols format
   return [
     { 
       symbol: `NQ${monthCode}${yearSuffix}`, 
       name: 'E-mini NASDAQ 100', 
       expiration: expirationDate, 
       contractMonth: `${contractMonth}${yearSuffix}`, 
-      finnhubSymbol: `OANDA:NAS100_USD` // Using forex equivalent for testing
+      finnhubSymbol: `NQ=F` // E-mini NASDAQ 100 futures
     },
     { 
       symbol: `ES${monthCode}${yearSuffix}`, 
       name: 'E-mini S&P 500', 
       expiration: expirationDate, 
       contractMonth: `${contractMonth}${yearSuffix}`, 
-      finnhubSymbol: `OANDA:SPX500_USD` // Using forex equivalent for testing
+      finnhubSymbol: `ES=F` // E-mini S&P 500 futures
     },
     { 
       symbol: `YM${monthCode}${yearSuffix}`, 
       name: 'E-mini Dow Jones', 
       expiration: expirationDate, 
       contractMonth: `${contractMonth}${yearSuffix}`, 
-      finnhubSymbol: `OANDA:US30_USD` // Using forex equivalent for testing
+      finnhubSymbol: `YM=F` // E-mini Dow Jones futures
     },
     { 
       symbol: `RTY${monthCode}${yearSuffix}`, 
       name: 'E-mini Russell 2000', 
       expiration: expirationDate, 
       contractMonth: `${contractMonth}${yearSuffix}`, 
-      finnhubSymbol: `OANDA:US2000_USD` // Using forex equivalent for testing
+      finnhubSymbol: `RTY=F` // E-mini Russell 2000 futures
     },
     { 
       symbol: `VX${monthCode}${yearSuffix}`, 
       name: 'VIX Futures', 
       expiration: expirationDate, 
       contractMonth: `${contractMonth}${yearSuffix}`, 
-      finnhubSymbol: `INDEX:VIX` // VIX index
+      finnhubSymbol: `VIX` // VIX Index (not futures, but close)
     }
   ];
 }
@@ -182,7 +182,9 @@ async function performFuturesScan() {
       
       // Try to fetch real data if API key exists
       if (finnhubApiKey) {
+        console.log(`🔍 Attempting to fetch real data for ${futuresContract.finnhubSymbol}...`);
         quote = await fetchFuturesQuote(futuresContract.finnhubSymbol, finnhubApiKey);
+        console.log(`📊 API Response for ${futuresContract.finnhubSymbol}:`, JSON.stringify(quote, null, 2));
       }
       
       // Use mock data if no API key or API fails

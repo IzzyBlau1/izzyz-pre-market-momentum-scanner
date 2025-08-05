@@ -14,6 +14,60 @@ export type Database = {
   }
   public: {
     Tables: {
+      momentum_scans: {
+        Row: {
+          catalyst: string | null
+          change_percent: number
+          company_name: string | null
+          created_at: string
+          estimated_float: number | null
+          id: string
+          momo1_signals: Json
+          momo2_signals: Json
+          previous_close: number
+          price: number
+          scan_timestamp: string
+          symbol: string
+          updated_at: string
+          volume: number
+          volume_spike: number
+        }
+        Insert: {
+          catalyst?: string | null
+          change_percent: number
+          company_name?: string | null
+          created_at?: string
+          estimated_float?: number | null
+          id?: string
+          momo1_signals: Json
+          momo2_signals: Json
+          previous_close: number
+          price: number
+          scan_timestamp?: string
+          symbol: string
+          updated_at?: string
+          volume: number
+          volume_spike: number
+        }
+        Update: {
+          catalyst?: string | null
+          change_percent?: number
+          company_name?: string | null
+          created_at?: string
+          estimated_float?: number | null
+          id?: string
+          momo1_signals?: Json
+          momo2_signals?: Json
+          previous_close?: number
+          price?: number
+          scan_timestamp?: string
+          symbol?: string
+          updated_at?: string
+          volume?: number
+          volume_spike?: number
+        }
+        Relationships: []
+      }
       scans: {
         Row: {
           created_at: string

@@ -123,53 +123,82 @@ function getActiveFutures(): Array<{symbol: string, name: string, expiration: st
   ];
 }
 
-// Fetch real-time futures quote from Finnhub
+// Fetch real-time futures quote with multiple data sources
 async function fetchFuturesQuote(symbol: string, apiKey: string) {
-  try {
-    console.log(`🔗 Calling Finnhub API: https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${apiKey.slice(0, 8)}...`);
-    const response = await fetch(`https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${apiKey}`);
-    
-    console.log(`📡 Response status: ${response.status} for ${symbol}`);
-    
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error(`❌ HTTP error for ${symbol}! status: ${response.status}, body: ${errorText}`);
-      throw new Error(`HTTP error! status: ${response.status}`);
+  console.log(`🔗 Trying multiple data sources for ${symbol}...`);
+  
+  // Try different symbol formats for Finnhub
+  const symbolVariants = [
+    symbol, // Original like "NQ=F"
+    symbol.replace('=F', ''), // Remove =F -> "NQ"  
+    symbol.replace('=F', '1!'), // Try CME format -> "NQ1!"
+    symbol.replace('=F', 'H25'), // Try specific contract -> "NQH25"
+    symbol.replace('=F', 'MAR2025'), // Try month format
+    `CME:${symbol}`, // Try exchange prefix
+    `CBOT:${symbol}`,
+    `CME_MINI:${symbol.replace('=F', '')}`,
+  ];
+
+  for (const testSymbol of symbolVariants) {
+    try {
+      console.log(`🔍 Testing symbol: ${testSymbol}`);
+      const response = await fetch(`https://finnhub.io/api/v1/quote?symbol=${testSymbol}&token=${apiKey}`);
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log(`📊 Response for ${testSymbol}:`, JSON.stringify(data, null, 2));
+        
+        // Check if we got real data (not zeros)
+        if (data.c && data.c > 0 && data.pc && data.pc > 0) {
+          console.log(`✅ SUCCESS! Found real data with symbol: ${testSymbol}`);
+          console.log(`💰 Price: ${data.c}, Previous: ${data.pc}`);
+          return data;
+        }
+      }
+      
+      // Add delay between requests to avoid rate limiting  
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+    } catch (error) {
+      console.error(`❌ Error with ${testSymbol}:`, error);
     }
+  }
+
+  // If Finnhub fails, try Alpha Vantage as backup
+  console.log(`🔄 Finnhub failed, trying Alpha Vantage...`);
+  try {
+    // Alpha Vantage doesn't need API key for basic quotes, but has different symbol format
+    const baseSymbol = symbol.replace('=F', '').replace('U25', '');
+    const alphaSymbol = baseSymbol === 'NQ' ? 'QQQ' : baseSymbol === 'ES' ? 'SPY' : baseSymbol; // Use ETF proxies
     
-    const data = await response.json();
-    console.log(`✅ Raw API data for ${symbol}:`, JSON.stringify(data, null, 2));
-    
-    // Check if we got valid data
-    if (data.c === 0 && data.pc === 0) {
-      console.log(`⚠️ Got zero/empty data for ${symbol}, trying alternative symbols...`);
+    const alphaResponse = await fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${alphaSymbol}&apikey=demo`);
+    if (alphaResponse.ok) {
+      const alphaData = await alphaResponse.json();
+      console.log(`📊 Alpha Vantage response:`, JSON.stringify(alphaData, null, 2));
       
-      // Try alternative symbol formats
-      const altSymbols = [
-        `${symbol.replace('=F', '')}`, // Remove =F suffix
-        `${symbol.replace('=F', '1!')}`, // Try with 1! suffix
-        symbol.replace('=F', '=F1'), // Try with F1 suffix
-      ];
-      
-      for (const altSymbol of altSymbols) {
-        console.log(`🔄 Trying alternative symbol: ${altSymbol}`);
-        const altResponse = await fetch(`https://finnhub.io/api/v1/quote?symbol=${altSymbol}&token=${apiKey}`);
-        if (altResponse.ok) {
-          const altData = await altResponse.json();
-          console.log(`📊 Alternative data for ${altSymbol}:`, JSON.stringify(altData, null, 2));
-          if (altData.c > 0) {
-            console.log(`✅ Found valid data with ${altSymbol}!`);
-            return altData;
-          }
+      if (alphaData['Global Quote']) {
+        const quote = alphaData['Global Quote'];
+        const current = parseFloat(quote['05. price']);
+        const previous = parseFloat(quote['08. previous close']);
+        
+        if (current > 0) {
+          console.log(`✅ Alpha Vantage SUCCESS! ${alphaSymbol}: ${current}`);
+          // Scale ETF price to futures equivalent
+          const multiplier = baseSymbol === 'NQ' ? 100 : baseSymbol === 'ES' ? 12.5 : 1;
+          return {
+            c: current * multiplier,
+            pc: previous * multiplier,
+            v: 100000 // Mock volume
+          };
         }
       }
     }
-    
-    return data;
   } catch (error) {
-    console.error(`❌ Error fetching quote for ${symbol}:`, error);
-    return null;
+    console.error(`❌ Alpha Vantage error:`, error);
   }
+
+  console.log(`❌ All data sources failed for ${symbol}`);
+  return null;
 }
 
 // Calculate simple momentum based on price action

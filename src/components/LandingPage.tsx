@@ -1,589 +1,433 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-
-interface StockScan {
-  symbol: string;
-  price: number;
-  change: number;
-  changePercent: number;
-  volume: number;
-  volumeSpike: number;
-  float: string;
-  catalyst: string;
-  momentum: {
-    momo1: {
-      "1m": "up" | "down" | "neutral";
-      "5m": "up" | "down" | "neutral";
-      "15m": "up" | "down" | "neutral";
-      "1h": "up" | "down" | "neutral";
-      "4h": "up" | "down" | "neutral";
-      "daily": "up" | "down" | "neutral";
-    };
-    momo2: {
-      "1m": "up" | "down" | "neutral";
-      "5m": "up" | "down" | "neutral";
-      "15m": "up" | "down" | "neutral";
-      "1h": "up" | "down" | "neutral";
-      "4h": "up" | "down" | "neutral";
-      "daily": "up" | "down" | "neutral";
-    };
-  };
-}
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { TrendingUp, BarChart3, Zap, Monitor, Users, Shield, ChevronRight, Star, Check } from "lucide-react";
 
 const LandingPage = () => {
-  const [isScanning, setIsScanning] = useState(false);
-  const [scanResults, setScanResults] = useState<StockScan[]>([]);
-  const [lastScan, setLastScan] = useState<Date | null>(null);
-
-  const mockData: StockScan[] = [
+  const features = [
     {
-      symbol: "WSR",
-      price: 12.19,
-      change: 1.23,
-      changePercent: 10.1,
-      volume: 2450000,
-      volumeSpike: 5.2,
-      float: "9.8M",
-      catalyst: "New Product Announcement",
-      momentum: {
-        momo1: { "1m": "up", "5m": "up", "15m": "up", "1h": "up", "4h": "up", "daily": "up" },
-        momo2: { "1m": "up", "5m": "up", "15m": "up", "1h": "up", "4h": "up", "daily": "up" }
-      }
+      icon: TrendingUp,
+      title: "Real-Time Momentum Analysis",
+      description: "Track momentum across multiple timeframes with instant visual feedback. No charts needed - just pure, actionable data."
     },
     {
-      symbol: "THC",
-      price: 5.94,
-      change: 0.61,
-      changePercent: 11.5,
-      volume: 1200000,
-      volumeSpike: 8.9,
-      float: "7.3M", 
-      catalyst: "Earnings Beat",
-      momentum: {
-        momo1: { "1m": "up", "5m": "up", "15m": "up", "1h": "up", "4h": "up", "daily": "up" },
-        momo2: { "1m": "up", "5m": "up", "15m": "up", "1h": "up", "4h": "up", "daily": "up" }
-      }
+      icon: BarChart3,
+      title: "Custom Column Technology",
+      description: "Our revolutionary custom column setup shows momentum changes in real-time with color-coded indicators across all timeframes."
     },
     {
-      symbol: "AES",
-      price: 13.15,
-      change: 1.71,
-      changePercent: 15.0,
-      volume: 890000,
-      volumeSpike: 7.3,
-      float: "9.2M",
-      catalyst: "M&A",
-      momentum: {
-        momo1: { "1m": "up", "5m": "up", "15m": "up", "1h": "up", "4h": "up", "daily": "up" },
-        momo2: { "1m": "up", "5m": "up", "15m": "up", "1h": "neutral", "4h": "down", "daily": "up" }
-      }
+      icon: Monitor,
+      title: "Space-Efficient Design",
+      description: "Monitor unlimited instruments without multiple screens. Perfect for traders with limited monitor space - see everything at once."
+    },
+    {
+      icon: Zap,
+      title: "Dual Momentum Studies",
+      description: "Advanced dual momentum analysis for each timeframe and instrument, giving you complete market insight in one compact view."
     }
   ];
 
-  const handleScan = async () => {
-    setIsScanning(true);
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    setScanResults(mockData);
-    setLastScan(new Date());
-    setIsScanning(false);
-  };
-
-  const getMomentumColor = (direction: string) => {
-    switch (direction) {
-      case "up": return "#10b981";
-      case "down": return "#ef4444";
-      default: return "#9ca3af";
+  const testimonials = [
+    {
+      name: "Marcus Chen",
+      role: "Day Trader",
+      content: "The custom column setup is genius. I can monitor 20+ stocks across all timeframes on a single screen. Game changer for my setup.",
+      rating: 5
+    },
+    {
+      name: "Sarah Rodriguez",
+      role: "Swing Trader", 
+      content: "Finally, a solution that doesn't require multiple monitors. The real-time momentum colors give me instant market insight.",
+      rating: 5
+    },
+    {
+      name: "David Thompson",
+      role: "Professional Trader",
+      content: "This workspace saves me hours of analysis. The momentum tracking across metals and oil futures is incredibly powerful.",
+      rating: 5
     }
-  };
+  ];
+
+  const pricingPlans = [
+    {
+      name: "Essential",
+      price: "$49",
+      period: "/month",
+      description: "Perfect for individual traders getting started",
+      features: [
+        "Real-time momentum tracking",
+        "Up to 5 custom instruments",
+        "Basic momentum indicators",
+        "Email support"
+      ],
+      popular: false
+    },
+    {
+      name: "Professional",
+      price: "$99",
+      period: "/month", 
+      description: "Ideal for serious traders and small teams",
+      features: [
+        "Unlimited instruments",
+        "Custom column technology",
+        "Dual momentum studies",
+        "Advanced timeframe analysis",
+        "Priority support",
+        "Training materials"
+      ],
+      popular: true
+    },
+    {
+      name: "Enterprise",
+      price: "$199",
+      period: "/month",
+      description: "Built for trading firms and institutions",
+      features: [
+        "Everything in Professional",
+        "Multi-user access",
+        "Custom indicator development",
+        "Dedicated account manager",
+        "24/7 phone support",
+        "API access"
+      ],
+      popular: false
+    }
+  ];
 
   return (
-    <div style={{
-      fontFamily: 'Arial, sans-serif',
-      margin: 0,
-      background: 'white',
-      fontSize: '18px',
-      lineHeight: 1.6,
-      backgroundColor: '#f8f8f8',
-      padding: '20px',
-      color: '#333'
-    }}>
-      <div style={{
-        width: '90%',
-        paddingBottom: '10px',
-        marginBottom: 0,
-        maxWidth: '1200px',
-        margin: 'auto',
-        background: 'white',
-        padding: '40px',
-        borderRadius: '8px',
-        boxShadow: '0 0 10px rgba(0,0,0,0.1)'
-      }}>
-        <div style={{
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'flex-start',
-          gap: '20px',
-          marginBottom: '20px'
-        }}>
-          <div>
-            <img 
-              alt="Logo" 
-              src="/lovable-uploads/77871a24-00a8-46f0-9aac-df91f38fbbc3.png" 
-              style={{
-                width: '200px',
-                height: 'auto',
-                objectFit: 'contain'
-              }}
-            />
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-card">
+      {/* Header */}
+      <header className="border-b border-border/50 backdrop-blur-sm bg-background/80 sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <div className="w-8 h-8 bg-gradient-to-br from-primary to-primary/70 rounded-lg flex items-center justify-center">
+                <TrendingUp className="w-5 h-5 text-primary-foreground" />
+              </div>
+              <h1 className="text-xl font-bold text-foreground">IzzyzTradingTools.com</h1>
+            </div>
+            <nav className="hidden md:flex items-center space-x-6">
+              <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors">Features</a>
+              <a href="#pricing" className="text-muted-foreground hover:text-foreground transition-colors">Pricing</a>
+              <a href="#testimonials" className="text-muted-foreground hover:text-foreground transition-colors">Reviews</a>
+              <Button variant="outline" size="sm">Sign In</Button>
+              <Button size="sm">Get Started</Button>
+            </nav>
           </div>
-          <div>
-            <h1 style={{
-              color: '#222',
-              textAlign: 'center',
-              marginTop: 0,
-              marginBottom: '10px',
-              fontSize: '28px',
-              fontWeight: 'bold'
-            }}>
-              Izzy'z Pre-Market Momentum Scanner
-            </h1>
-            <h2 style={{
-              color: '#222',
-              textAlign: 'center',
-              fontSize: '20px',
-              fontWeight: 'bold',
-              marginTop: '10px',
-              marginBottom: '15px'
-            }}>
-              Get the Best Trade Setups 90 Minutes Before the Bell. Enter Your Trades Pre-Market, and Be Done With Your Trading Day Before the Market Even Opens!!
-            </h2>
-            <p style={{ 
-              textAlign: 'left', 
-              color: '#222',
-              marginTop: '15px',
-              marginBottom: '20px' 
-            }}>
-              <span style={{
-                color: '#008060',
-                fontWeight: 'bold'
-              }}>
-                AI-assisted. Powered by AI-enhanced logic. Built using AI-assisted modeling for real-time directional clarity.
-              </span>
+        </div>
+      </header>
+
+      {/* Hero Section */}
+      <section className="py-20 px-4">
+        <div className="container mx-auto text-center">
+          <Badge variant="outline" className="mb-4 px-3 py-1">
+            <Zap className="w-3 h-3 mr-1" />
+            Revolutionary Trading Technology
+          </Badge>
+          
+          <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+            Master Market Momentum<br />
+            <span className="text-primary">Without the Clutter</span>
+          </h1>
+          
+          <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto leading-relaxed">
+            Our custom column technology delivers real-time momentum analysis across multiple timeframes. 
+            Track unlimited instruments on a single screen with color-coded visual feedback that changes as market conditions evolve.
+          </p>
+          
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+            <Button size="lg" className="px-8 py-3 text-lg">
+              Start Free Trial
+              <ChevronRight className="w-5 h-5 ml-2" />
+            </Button>
+            <Button variant="outline" size="lg" className="px-8 py-3 text-lg">
+              Watch Demo
+            </Button>
+          </div>
+
+          {/* Key Stats */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+            <div className="text-center">
+              <div className="text-3xl font-bold text-primary mb-2">99%</div>
+              <p className="text-muted-foreground">Screen Space Saved</p>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-primary mb-2">5x</div>
+              <p className="text-muted-foreground">Faster Analysis</p>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-primary mb-2">∞</div>
+              <p className="text-muted-foreground">Instruments Tracked</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section id="features" className="py-20 px-4 bg-gradient-to-r from-card/50 to-background">
+        <div className="container mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Powerful Features for Modern Traders</h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Everything you need to track market momentum efficiently, from stocks to futures and beyond.
             </p>
           </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+            {features.map((feature, index) => (
+              <Card key={index} className="group hover:shadow-lg transition-all duration-300 border-border/50 bg-gradient-to-br from-card to-card/50">
+                <CardHeader>
+                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
+                    <feature.icon className="w-6 h-6 text-primary" />
+                  </div>
+                  <CardTitle className="text-xl">{feature.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription className="text-base leading-relaxed">
+                    {feature.description}
+                  </CardDescription>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </div>
-        
-        {/* Interactive Scanner Demo */}
-        <div style={{
-          marginTop: '40px',
-          marginBottom: '40px',
-          textAlign: 'center'
-        }}>
-          <div style={{ marginBottom: '20px' }}>
-            <Button 
-              onClick={handleScan} 
-              disabled={isScanning}
-              style={{
-                backgroundColor: '#008060',
-                color: 'white',
-                padding: '15px 25px',
-                fontSize: '18px',
-                fontWeight: 'bold',
-                border: 'none',
-                borderRadius: '5px',
-                cursor: 'pointer'
-              }}
-            >
-              {isScanning ? "Scanning..." : "SCAN"}
+      </section>
+
+      {/* Benefits Section */}
+      <section className="py-20 px-4">
+        <div className="container mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                The Smart Solution for <span className="text-primary">Space-Constrained Traders</span>
+              </h2>
+              <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
+                Whether you're trading from a laptop or have limited monitor space, our custom column technology 
+                lets you monitor unlimited instruments with dual momentum studies across all timeframes - 
+                all in one compact, visually intuitive interface.
+              </p>
+              
+              <div className="space-y-4">
+                <div className="flex items-center space-x-3">
+                  <div className="w-6 h-6 bg-success/20 rounded-full flex items-center justify-center">
+                    <Check className="w-4 h-4 text-success" />
+                  </div>
+                  <span className="text-foreground">Monitor stocks, metals, oil futures and more</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <div className="w-6 h-6 bg-success/20 rounded-full flex items-center justify-center">
+                    <Check className="w-4 h-4 text-success" />
+                  </div>
+                  <span className="text-foreground">Real-time color-coded momentum changes</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <div className="w-6 h-6 bg-success/20 rounded-full flex items-center justify-center">
+                    <Check className="w-4 h-4 text-success" />
+                  </div>
+                  <span className="text-foreground">No charts required - pure data efficiency</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <div className="w-6 h-6 bg-success/20 rounded-full flex items-center justify-center">
+                    <Check className="w-4 h-4 text-success" />
+                  </div>
+                  <span className="text-foreground">Perfect for single or dual monitor setups</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="relative">
+              <div className="bg-gradient-to-br from-card to-card/50 p-8 rounded-lg border border-border/50 shadow-xl">
+                <h3 className="text-xl font-semibold mb-4">Live Momentum Dashboard</h3>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center p-3 bg-background/50 rounded">
+                    <span className="font-medium">SPY</span>
+                    <div className="flex space-x-2">
+                      <Badge className="bg-success/20 text-success border-success/30">1M</Badge>
+                      <Badge className="bg-success/20 text-success border-success/30">5M</Badge>
+                      <Badge className="bg-warning/20 text-warning border-warning/30">15M</Badge>
+                      <Badge className="bg-success/20 text-success border-success/30">1H</Badge>
+                    </div>
+                  </div>
+                  <div className="flex justify-between items-center p-3 bg-background/50 rounded">
+                    <span className="font-medium">QQQ</span>
+                    <div className="flex space-x-2">
+                      <Badge className="bg-success/20 text-success border-success/30">1M</Badge>
+                      <Badge className="bg-warning/20 text-warning border-warning/30">5M</Badge>
+                      <Badge className="bg-success/20 text-success border-success/30">15M</Badge>
+                      <Badge className="bg-success/20 text-success border-success/30">1H</Badge>
+                    </div>
+                  </div>
+                  <div className="flex justify-between items-center p-3 bg-background/50 rounded">
+                    <span className="font-medium">GLD</span>
+                    <div className="flex space-x-2">
+                      <Badge className="bg-destructive/20 text-destructive border-destructive/30">1M</Badge>
+                      <Badge className="bg-destructive/20 text-destructive border-destructive/30">5M</Badge>
+                      <Badge className="bg-warning/20 text-warning border-warning/30">15M</Badge>
+                      <Badge className="bg-warning/20 text-warning border-warning/30">1H</Badge>
+                    </div>
+                  </div>
+                </div>
+                <p className="text-sm text-muted-foreground mt-4">
+                  Colors update in real-time as momentum shifts across timeframes
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section id="testimonials" className="py-20 px-4 bg-gradient-to-r from-card/30 to-background">
+        <div className="container mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Trusted by Professional Traders</h2>
+            <p className="text-xl text-muted-foreground">See what our users are saying about their trading transformation</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {testimonials.map((testimonial, index) => (
+              <Card key={index} className="border-border/50 bg-gradient-to-br from-card to-card/50">
+                <CardHeader>
+                  <div className="flex items-center space-x-1 mb-2">
+                    {[...Array(testimonial.rating)].map((_, i) => (
+                      <Star key={i} className="w-4 h-4 fill-primary text-primary" />
+                    ))}
+                  </div>
+                  <CardDescription className="text-base leading-relaxed">
+                    "{testimonial.content}"
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div>
+                    <div className="font-semibold text-foreground">{testimonial.name}</div>
+                    <div className="text-sm text-muted-foreground">{testimonial.role}</div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing */}
+      <section id="pricing" className="py-20 px-4">
+        <div className="container mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Choose Your Trading Edge</h2>
+            <p className="text-xl text-muted-foreground">Professional tools for every level of trader</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            {pricingPlans.map((plan, index) => (
+              <Card key={index} className={`relative border-border/50 ${plan.popular ? 'ring-2 ring-primary shadow-xl scale-105' : ''}`}>
+                {plan.popular && (
+                  <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-primary text-primary-foreground">
+                    Most Popular
+                  </Badge>
+                )}
+                <CardHeader className="text-center">
+                  <CardTitle className="text-2xl">{plan.name}</CardTitle>
+                  <div className="flex items-baseline justify-center space-x-1">
+                    <span className="text-4xl font-bold text-foreground">{plan.price}</span>
+                    <span className="text-muted-foreground">{plan.period}</span>
+                  </div>
+                  <CardDescription>{plan.description}</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <ul className="space-y-3">
+                    {plan.features.map((feature, featureIndex) => (
+                      <li key={featureIndex} className="flex items-center space-x-3">
+                        <Check className="w-4 h-4 text-success" />
+                        <span className="text-sm">{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <Button className="w-full" variant={plan.popular ? "default" : "outline"}>
+                    {plan.popular ? "Start Free Trial" : "Get Started"}
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 px-4 bg-gradient-to-r from-primary/10 to-primary/5">
+        <div className="container mx-auto text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            Ready to Transform Your Trading?
+          </h2>
+          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+            Join thousands of traders who've revolutionized their analysis with our custom column technology.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button size="lg" className="px-8 py-3 text-lg">
+              Start 7-Day Free Trial
+              <ChevronRight className="w-5 h-5 ml-2" />
             </Button>
-            {lastScan && (
-              <p style={{ fontSize: '14px', color: '#666', marginTop: '10px' }}>
-                Last scan: {lastScan.toLocaleTimeString()}
-              </p>
-            )}
+            <Button variant="outline" size="lg" className="px-8 py-3 text-lg">
+              Schedule Demo
+            </Button>
           </div>
+          <p className="text-sm text-muted-foreground mt-4">
+            No credit card required • Cancel anytime • 30-day money-back guarantee
+          </p>
+        </div>
+      </section>
 
-          {/* Scanner Results Table */}
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{
-              width: '100%',
-              borderCollapse: 'collapse',
-              border: '1px solid #ddd',
-              backgroundColor: 'white',
-              borderRadius: '8px',
-              fontSize: '14px'
-            }}>
-              <thead>
-                <tr style={{ backgroundColor: '#f0f0f0' }}>
-                  <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left', fontWeight: 'bold' }}>Ticker</th>
-                  <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center', fontWeight: 'bold' }}>Last $</th>
-                  <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center', fontWeight: 'bold' }}>% Change</th>
-                  <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center', fontWeight: 'bold' }}>V-Spike</th>
-                  <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center', fontWeight: 'bold' }}>Float</th>
-                  <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center', fontWeight: 'bold' }}>Catalyst</th>
-                  <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center', fontWeight: 'bold' }}>Momentum</th>
-                  <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center', fontWeight: 'bold', fontSize: '10px' }}>1 MIN</th>
-                  <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center', fontWeight: 'bold', fontSize: '10px' }}>5 MIN</th>
-                  <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center', fontWeight: 'bold', fontSize: '10px' }}>15 MIN</th>
-                  <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center', fontWeight: 'bold', fontSize: '10px' }}>1H</th>
-                  <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center', fontWeight: 'bold', fontSize: '10px' }}>4H</th>
-                  <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center', fontWeight: 'bold', fontSize: '10px' }}>Day</th>
-                </tr>
-              </thead>
-              <tbody>
-                {scanResults.length > 0 && scanResults.map((stock, stockIndex) => (
-                    <React.Fragment key={stock.symbol}>
-                      {/* MoMo1 Row */}
-                      <tr style={{ backgroundColor: stockIndex % 2 === 0 ? '#fff' : '#f9f9f9' }}>
-                        <td style={{ border: '1px solid #ddd', padding: '8px', fontWeight: 'bold' }} rowSpan={2}>
-                          {stock.symbol}
-                        </td>
-                        <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center' }} rowSpan={2}>
-                          ${stock.price.toFixed(2)}
-                        </td>
-                        <td style={{ 
-                          border: '1px solid #ddd', 
-                          padding: '8px', 
-                          textAlign: 'center', 
-                          fontWeight: 'bold',
-                          color: stock.changePercent >= 0 ? '#10b981' : '#ef4444'
-                        }} rowSpan={2}>
-                          {stock.changePercent >= 0 ? '+' : ''}{stock.changePercent.toFixed(1)}%
-                        </td>
-                        <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center' }} rowSpan={2}>
-                          {stock.volumeSpike.toFixed(1)}x
-                        </td>
-                        <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center' }} rowSpan={2}>
-                          {stock.float}
-                        </td>
-                        <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center', fontSize: '12px' }} rowSpan={2}>
-                          {stock.catalyst}
-                        </td>
-                        <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center', fontSize: '12px', fontWeight: 'bold' }}>
-                          MoMo1
-                        </td>
-                        {(["1m", "5m", "15m", "1h", "4h", "daily"] as const).map((timeframe) => (
-                          <td key={`momo1-${timeframe}`} style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center' }}>
-                            <div style={{
-                              width: '12px',
-                              height: '12px',
-                              margin: '0 auto',
-                              borderRadius: '50%',
-                              backgroundColor: getMomentumColor(stock.momentum.momo1[timeframe])
-                            }}></div>
-                          </td>
-                        ))}
-                      </tr>
-                      {/* MoMo2 Row */}
-                      <tr style={{ backgroundColor: stockIndex % 2 === 0 ? '#fff' : '#f9f9f9' }}>
-                        <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center', fontSize: '12px', fontWeight: 'bold' }}>
-                          MoMo2
-                        </td>
-                        {(["1m", "5m", "15m", "1h", "4h", "daily"] as const).map((timeframe) => (
-                          <td key={`momo2-${timeframe}`} style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center' }}>
-                            <div style={{
-                              width: '12px',
-                              height: '12px',
-                              margin: '0 auto',
-                              borderRadius: '50%',
-                              backgroundColor: getMomentumColor(stock.momentum.momo2[timeframe])
-                            }}></div>
-                          </td>
-                        ))}
-                      </tr>
-                     </React.Fragment>
-                  ))
-                }
-              </tbody>
-            </table>
-          </div>
-
-          {/* Empty State */}
-          {scanResults.length === 0 && !isScanning && (
-            <div style={{
-              textAlign: 'center',
-              padding: '40px',
-              backgroundColor: '#f9f9f9',
-              borderRadius: '8px',
-              border: '1px solid #ddd'
-            }}>
-              <p style={{ color: '#666' }}>
-                Click SCAN to see live pre-market momentum opportunities
+      {/* Footer */}
+      <footer className="border-t border-border/50 py-12 px-4">
+        <div className="container mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div>
+              <div className="flex items-center space-x-2 mb-4">
+                <div className="w-8 h-8 bg-gradient-to-br from-primary to-primary/70 rounded-lg flex items-center justify-center">
+                  <TrendingUp className="w-5 h-5 text-primary-foreground" />
+                </div>
+                <h3 className="font-bold text-foreground">IzzyzTradingTools</h3>
+              </div>
+              <p className="text-muted-foreground text-sm">
+                Empowering traders with revolutionary momentum analysis technology.
               </p>
             </div>
-          )}
-        </div>
-        
-        <h3 style={{
-          margin: 0,
-          padding: 0,
-          textAlign: 'center',
-          color: '#222',
-          fontWeight: 'bold',
-          marginBottom: '20px'
-        }}>
-          What Makes This Scanner So Special?
-        </h3>
-        <ul style={{ marginLeft: '20px' }}>
-          <li style={{ color: '#222' }}>
-            ✅ <strong>Optimized for Pre-Market Trading</strong> – Find top movers 60–90 minutes before the market opens.
-          </li>
-          <li style={{ color: '#222' }}>
-            ✅ <strong>Dual Momentum Confirmation</strong> – Powered by AI-enhanced logic using two independent directional models.
-          </li>
-          <li style={{ color: '#222' }}>
-            ✅ <strong>Catalyst-Driven</strong> – No Catalyst? No signal! This scanner only shows stocks backed by a catalyst driven event.
-          </li>
-          <li style={{ color: '#222' }}>
-            ✅ <strong>Clear Visual Output</strong> – Color-coded trend signals across 6 timeframes, from 1m to Daily.
-          </li>
-          <li style={{ color: '#222' }}>
-            ✅ <strong>Lightweight and Easy to Use</strong> – Just click <strong>Scan</strong>. No setup. No coding. No platform dependency.
-          </li>
-        </ul>
-        
-        <h3 style={{ 
-          color: '#222', 
-          textAlign: 'center',
-          fontWeight: 'bold',
-          marginTop: '40px',
-          marginBottom: '20px'
-        }}>What's Included:</h3>
-        <ul style={{ marginLeft: '20px' }}>
-          <li style={{ color: '#222' }}>✅ Instant access to the standalone scanner app</li>
-          <li style={{ color: '#222' }}>✅ No Recurring or Subscription Fees. Lifetime FREE Upgrades.</li>
-          <li style={{ color: '#222' }}>✅ Float, price, volume spike, and catalyst filters built-in</li>
-          <li style={{ color: '#222' }}>✅ Proprietary AI-assisted momentum detection</li>
-          <li style={{ color: '#222' }}>✅ 5–10 qualified trade opportunities daily</li>
-          <li style={{ color: '#222' }}>✅ Works alongside any brokerage account</li>
-          <li style={{ color: '#222' }}>✅ Compatible with Windows, Mac, Android, and iOS — available as a mobile download or use through your desktop browser</li>
-        </ul>
-        
-        <h3 style={{ 
-          color: '#222', 
-          textAlign: 'center',
-          fontWeight: 'bold',
-          marginTop: '40px',
-          marginBottom: '20px'
-        }}>As easy as 1, 2, 3:</h3>
-        <ol style={{ marginLeft: '20px' }}>
-          <li style={{ color: '#222' }}>1. Open the scanner app</li>
-          <li style={{ color: '#222' }}>2. Click the <strong>Scan</strong> button</li>
-          <li style={{ color: '#222' }}>3. Review results with directional bias, float, volume, and catalyst data</li>
-          <li style={{ color: '#222' }}>Execute trades using your broker (if pre-market access is available)</li>
-        </ol>
-        
-        <h3 style={{ 
-          textAlign: 'center', 
-          color: '#222',
-          fontWeight: 'bold',
-          fontSize: '24px',
-          marginTop: '40px',
-          marginBottom: '20px'
-        }}>
-          One Time Low Price <span style={{ color: '#008060', fontWeight: 'bold' }}>$97</span> ... No Recurring or Subscription Fees
-        </h3>
-        <p style={{
-          textAlign: 'center',
-          fontWeight: 'bold',
-          marginTop: '20px',
-          color: '#222'
-        }}>
-          No subscriptions. No bloat. Just a sharp trading tool that gives you an undeniable proven edge before most traders even have a clue.
-        </p>
-        
-        <div style={{ textAlign: 'center' }}>
-          <Link 
-            to="/scanner" 
-            style={{
-              backgroundColor: '#008060',
-              color: 'white',
-              padding: '15px 25px',
-              textAlign: 'center',
-              display: 'inline-block',
-              borderRadius: '5px',
-              marginTop: '20px',
-              textDecoration: 'none',
-              fontWeight: 'bold'
-            }}
-          >
-            Download Now - Start Winning Today and Get the Trading Edge You've Been Looking For
-          </Link>
-        </div>
-        
-        <h3 style={{ color: '#222', textAlign: 'center' }}>Pricing Comparison:</h3>
-        <table style={{
-          marginTop: '40px',
-          width: '100%',
-          borderCollapse: 'collapse'
-        }}>
-          <thead>
-            <tr>
-              <th style={{
-                border: '1px solid #ddd',
-                padding: '10px',
-                textAlign: 'center',
-                backgroundColor: '#f0f0f0',
-                color: '#222'
-              }}>Feature</th>
-              <th style={{
-                border: '1px solid #ddd',
-                padding: '10px',
-                textAlign: 'center',
-                backgroundColor: '#f0f0f0',
-                color: '#222'
-              }}>Izzy'z Scanner</th>
-              <th style={{
-                border: '1px solid #ddd',
-                padding: '10px',
-                textAlign: 'center',
-                backgroundColor: '#f0f0f0',
-                color: '#222'
-              }}>Typical Scanner</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td style={{ border: '1px solid #ddd', padding: '10px', textAlign: 'center', color: '#222' }}>Price</td>
-              <td style={{ border: '1px solid #ddd', padding: '10px', textAlign: 'center', color: '#222' }}>$97 (one-time)</td>
-              <td style={{ border: '1px solid #ddd', padding: '10px', textAlign: 'center', color: '#222' }}>$39/month</td>
-            </tr>
-            <tr>
-              <td style={{ border: '1px solid #ddd', padding: '10px', textAlign: 'center', color: '#222' }}>Lifetime Access</td>
-              <td style={{ border: '1px solid #ddd', padding: '10px', textAlign: 'center', color: '#222' }}>✅</td>
-              <td style={{ border: '1px solid #ddd', padding: '10px', textAlign: 'center', color: '#222' }}>❌</td>
-            </tr>
-            <tr>
-              <td style={{ border: '1px solid #ddd', padding: '10px', textAlign: 'center', color: '#222' }}>Pre-Market Scanning</td>
-              <td style={{ border: '1px solid #ddd', padding: '10px', textAlign: 'center', color: '#222' }}>✅</td>
-              <td style={{ border: '1px solid #ddd', padding: '10px', textAlign: 'center', color: '#222' }}>❌</td>
-            </tr>
-            <tr>
-              <td style={{ border: '1px solid #ddd', padding: '10px', textAlign: 'center', color: '#222' }}>Catalyst Detection</td>
-              <td style={{ border: '1px solid #ddd', padding: '10px', textAlign: 'center', color: '#222' }}>✅</td>
-              <td style={{ border: '1px solid #ddd', padding: '10px', textAlign: 'center', color: '#222' }}>❌</td>
-            </tr>
-            <tr>
-              <td style={{ border: '1px solid #ddd', padding: '10px', textAlign: 'center', color: '#222' }}>Momentum Confirmation</td>
-              <td style={{ border: '1px solid #ddd', padding: '10px', textAlign: 'center', color: '#222' }}>✅</td>
-              <td style={{ border: '1px solid #ddd', padding: '10px', textAlign: 'center', color: '#222' }}>❌</td>
-            </tr>
-            <tr>
-              <td style={{ border: '1px solid #ddd', padding: '10px', textAlign: 'center', color: '#222' }}>Broker Independence</td>
-              <td style={{ border: '1px solid #ddd', padding: '10px', textAlign: 'center', color: '#222' }}>✅</td>
-              <td style={{ border: '1px solid #ddd', padding: '10px', textAlign: 'center', color: '#222' }}>❌</td>
-            </tr>
-          </tbody>
-        </table>
-        
-        <div style={{ marginTop: '40px' }}>
-          <h3 style={{ 
-            color: '#222', 
-            textAlign: 'center',
-            fontWeight: 'bold'
-          }}>What Traders Are Saying:</h3>
-          <div style={{
-            backgroundColor: '#f9f9f9',
-            borderLeft: '5px solid #008060',
-            marginBottom: '20px',
-            padding: '15px 20px',
-            borderRadius: '6px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '15px'
-          }}>
-            <img 
-              alt="Sarah" 
-              src="https://randomuser.me/api/portraits/women/44.jpg"
-              style={{
-                width: '50px',
-                height: '50px',
-                borderRadius: '50%'
-              }}
-            />
+            
             <div>
-              <div><strong style={{ color: '#222' }}>Sarah M.</strong></div>
-              <div style={{
-                color: 'gold',
-                fontSize: '18px',
-                marginTop: '5px'
-              }}>★★★★★</div>
-              <div style={{ color: '#222' }}>"Been trading for 8 years. This is the first time I consistently catch pre-market runners. Total game changer."</div>
+              <h4 className="font-semibold mb-4">Product</h4>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li><a href="#" className="hover:text-foreground transition-colors">Features</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">Pricing</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">Documentation</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">API</a></li>
+              </ul>
+            </div>
+            
+            <div>
+              <h4 className="font-semibold mb-4">Support</h4>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li><a href="#" className="hover:text-foreground transition-colors">Help Center</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">Contact Us</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">Status</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">Training</a></li>
+              </ul>
+            </div>
+            
+            <div>
+              <h4 className="font-semibold mb-4">Company</h4>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li><a href="#" className="hover:text-foreground transition-colors">About</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">Blog</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">Privacy</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">Terms</a></li>
+              </ul>
             </div>
           </div>
-          <div style={{
-            backgroundColor: '#f9f9f9',
-            borderLeft: '5px solid #008060',
-            marginBottom: '20px',
-            padding: '15px 20px',
-            borderRadius: '6px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '15px'
-          }}>
-            <img 
-              alt="Mark" 
-              src="https://randomuser.me/api/portraits/men/22.jpg"
-              style={{
-                width: '50px',
-                height: '50px',
-                borderRadius: '50%'
-              }}
-            />
-            <div>
-              <div><strong style={{ color: '#222' }}>Mark T.</strong></div>
-              <div style={{
-                color: 'gold',
-                fontSize: '18px',
-                marginTop: '5px'
-              }}>★★★★★</div>
-              <div style={{ color: '#222' }}>"I was skeptical... but 3 back-to-back green trades in pre-market? I'm convinced."</div>
-            </div>
-          </div>
-          <div style={{
-            backgroundColor: '#f9f9f9',
-            borderLeft: '5px solid #008060',
-            marginBottom: '20px',
-            padding: '15px 20px',
-            borderRadius: '6px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '15px'
-          }}>
-            <img 
-              alt="Alex" 
-              src="https://randomuser.me/api/portraits/men/12.jpg"
-              style={{
-                width: '50px',
-                height: '50px',
-                borderRadius: '50%'
-              }}
-            />
-            <div>
-              <div><strong style={{ color: '#222' }}>Alex D.</strong></div>
-              <div style={{
-                color: 'gold',
-                fontSize: '18px',
-                marginTop: '5px'
-              }}>★★★★★</div>
-              <div style={{ color: '#222' }}>"Saves me an hour of chart scanning every morning. Click. Done. Profit."</div>
-            </div>
+          
+          <div className="border-t border-border/50 mt-8 pt-8 text-center text-sm text-muted-foreground">
+            <p>&copy; 2024 IzzyzTradingTools.com. All rights reserved.</p>
           </div>
         </div>
-        
-        <div style={{
-          marginTop: '30px',
-          display: 'flex',
-          gap: '20px',
-          justifyContent: 'center'
-        }}>
-          <img alt="Trusted" src="https://img.icons8.com/ios-filled/50/verified-account.png" style={{ height: '40px' }}/>
-          <img alt="Rated" src="https://img.icons8.com/ios-filled/50/thumb-up.png" style={{ height: '40px' }}/>
-          <img alt="Reliable" src="https://img.icons8.com/ios-filled/50/handshake.png" style={{ height: '40px' }}/>
-        </div>
-      </div>
+      </footer>
     </div>
   );
 };

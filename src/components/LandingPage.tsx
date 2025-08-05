@@ -5,12 +5,61 @@ import { TrendingUp, BarChart3, Zap, Monitor, Users, Shield, ChevronRight, Star,
 import { useState, useEffect } from "react";
 
 const LandingPage = () => {
-  const [animationKey, setAnimationKey] = useState(0);
+  const [momentumStates, setMomentumStates] = useState<{[key: string]: string[]}>({});
+
+  const signals = ['LONG', 'SHORT', 'WeakBuy', 'WeakShort', 'StrongBuy', 'StrongShort', 'HOLD'];
+  
+  const getSignalStyle = (signal: string) => {
+    switch(signal) {
+      case 'LONG': return 'bg-green-400 text-white';
+      case 'SHORT': return 'bg-red-500 text-white';
+      case 'WeakBuy': return 'bg-blue-500 text-white';
+      case 'WeakShort': return 'bg-fuchsia-500 text-white';
+      case 'StrongBuy': return 'bg-green-800 text-white';
+      case 'StrongShort': return 'bg-red-700 text-white';
+      case 'HOLD': return 'bg-yellow-500 text-black';
+      default: return 'bg-gray-500 text-white';
+    }
+  };
+
+  const getRandomSignal = () => signals[Math.floor(Math.random() * signals.length)];
+
+  const initializeMomentumStates = () => {
+    const tickers = ['AMD', 'NVDA', 'TSLA', 'MSFT', 'AAPL', 'SPY', '/NQ', '/GC', '/CL'];
+    const states: {[key: string]: string[]} = {};
+    
+    tickers.forEach(ticker => {
+      if (ticker === 'SPY' || ticker === '/NQ' || ticker === 'NVDA') {
+        // Keep these all green (LONG)
+        states[ticker] = Array(16).fill('LONG');
+      } else {
+        // Initialize with random signals for other tickers
+        states[ticker] = Array(16).fill(null).map(() => getRandomSignal());
+      }
+    });
+    
+    setMomentumStates(states);
+  };
+
+  useEffect(() => {
+    initializeMomentumStates();
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setAnimationKey(prev => prev + 1);
-    }, 2000);
+      setMomentumStates(prev => {
+        const newStates = { ...prev };
+        Object.keys(newStates).forEach(ticker => {
+          if (ticker !== 'SPY' && ticker !== '/NQ' && ticker !== 'NVDA') {
+            // Randomly update some cells for slot machine effect
+            newStates[ticker] = newStates[ticker].map(signal => 
+              Math.random() < 0.3 ? getRandomSignal() : signal
+            );
+          }
+        });
+        return newStates;
+      });
+    }, 1200);
     return () => clearInterval(interval);
   }, []);
 
@@ -162,185 +211,103 @@ const LandingPage = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr key={`amd-${animationKey}`} className="border-b border-border/30">
+                  {/* AMD Row */}
+                  <tr className="border-b border-border/30">
                     <td className="p-3 font-semibold text-cyan-400">AMD</td>
                     <td className="p-3 text-green-400">152.34</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-blue-500 text-white font-semibold animate-pulse">WeakBuy</td>
-                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold animate-pulse">HOLD</td>
-                    <td className="p-3 text-center bg-red-500 text-white font-semibold animate-pulse">SHORT</td>
-                    <td className="p-3 text-center bg-green-800 text-white font-semibold animate-pulse">StrongBuy</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-fuchsia-500 text-white font-semibold animate-pulse">WeakShort</td>
-                    <td className="p-3 text-center bg-green-800 text-white font-semibold animate-pulse">StrongBuy</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    {momentumStates['AMD']?.map((signal, index) => (
+                      <td key={index} className={`p-3 text-center font-semibold transition-all duration-300 ${getSignalStyle(signal)}`}>
+                        {signal}
+                      </td>
+                    ))}
                   </tr>
-                  <tr key={`nvda-${animationKey}`} className="border-b border-border/30">
+                  
+                  {/* NVDA Row - Always LONG */}
+                  <tr className="border-b border-border/30">
                     <td className="p-3 font-semibold text-cyan-400">NVDA</td>
                     <td className="p-3 text-green-400">139.76</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    {momentumStates['NVDA']?.map((signal, index) => (
+                      <td key={index} className={`p-3 text-center font-semibold transition-all duration-300 ${getSignalStyle(signal)} animate-pulse`}>
+                        {signal}
+                      </td>
+                    ))}
                   </tr>
-                  <tr key={`tsla-${animationKey}`} className="border-b border-border/30">
+                  
+                  {/* TSLA Row */}
+                  <tr className="border-b border-border/30">
                     <td className="p-3 font-semibold text-cyan-400">TSLA</td>
                     <td className="p-3 text-green-400">248.67</td>
-                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
-                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
-                    <td className="p-3 text-center bg-fuchsia-500 text-white font-semibold">WeakShort</td>
-                    <td className="p-3 text-center bg-red-700 text-white font-semibold">StrongShort</td>
-                    <td className="p-3 text-center bg-red-500 text-white font-semibold">SHORT</td>
-                    <td className="p-3 text-center bg-red-700 text-white font-semibold">StrongShort</td>
-                    <td className="p-3 text-center bg-red-500 text-white font-semibold">SHORT</td>
-                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
-                    <td className="p-3 text-center bg-red-500 text-white font-semibold">SHORT</td>
-                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
-                    <td className="p-3 text-center bg-red-500 text-white font-semibold">SHORT</td>
-                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
-                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
-                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
-                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
-                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
+                    {momentumStates['TSLA']?.map((signal, index) => (
+                      <td key={index} className={`p-3 text-center font-semibold transition-all duration-300 ${getSignalStyle(signal)}`}>
+                        {signal}
+                      </td>
+                    ))}
                   </tr>
-                  <tr key={`msft-${animationKey}`} className="border-b border-border/30">
+                  
+                  {/* MSFT Row */}
+                  <tr className="border-b border-border/30">
                     <td className="p-3 font-semibold text-cyan-400">MSFT</td>
                     <td className="p-3 text-green-400">421.89</td>
-                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
-                    <td className="p-3 text-center bg-green-800 text-white font-semibold">StrongBuy</td>
-                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
-                    <td className="p-3 text-center bg-green-800 text-white font-semibold">StrongBuy</td>
-                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
-                    <td className="p-3 text-center bg-green-800 text-white font-semibold">StrongBuy</td>
-                    <td className="p-3 text-center bg-red-500 text-white font-semibold">SHORT</td>
-                    <td className="p-3 text-center bg-red-500 text-white font-semibold">SHORT</td>
-                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
-                    <td className="p-3 text-center bg-green-800 text-white font-semibold">StrongBuy</td>
-                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
-                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
-                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
-                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
-                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
-                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
+                    {momentumStates['MSFT']?.map((signal, index) => (
+                      <td key={index} className={`p-3 text-center font-semibold transition-all duration-300 ${getSignalStyle(signal)}`}>
+                        {signal}
+                      </td>
+                    ))}
                   </tr>
-                  <tr key={`aapl-${animationKey}`} className="border-b border-border/30">
+                  
+                  {/* AAPL Row */}
+                  <tr className="border-b border-border/30">
                     <td className="p-3 font-semibold text-cyan-400">AAPL</td>
                     <td className="p-3 text-green-400">234.56</td>
-                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
-                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
-                    <td className="p-3 text-center bg-blue-500 text-white font-semibold">WeakBuy</td>
-                    <td className="p-3 text-center bg-red-700 text-white font-semibold">StrongShort</td>
-                    <td className="p-3 text-center bg-red-500 text-white font-semibold">SHORT</td>
-                    <td className="p-3 text-center bg-red-700 text-white font-semibold">StrongShort</td>
-                    <td className="p-3 text-center bg-red-500 text-white font-semibold">SHORT</td>
-                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
-                    <td className="p-3 text-center bg-red-500 text-white font-semibold">SHORT</td>
-                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
-                    <td className="p-3 text-center bg-red-500 text-white font-semibold">SHORT</td>
-                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
-                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
-                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
-                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
-                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
+                    {momentumStates['AAPL']?.map((signal, index) => (
+                      <td key={index} className={`p-3 text-center font-semibold transition-all duration-300 ${getSignalStyle(signal)}`}>
+                        {signal}
+                      </td>
+                    ))}
                   </tr>
-                  <tr key={`spy-${animationKey}`} className="border-b border-border/30">
+                  
+                  {/* SPY Row - Always LONG */}
+                  <tr className="border-b border-border/30">
                     <td className="p-3 font-semibold text-cyan-400">SPY</td>
                     <td className="p-3 text-green-400">598.12</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    {momentumStates['SPY']?.map((signal, index) => (
+                      <td key={index} className={`p-3 text-center font-semibold transition-all duration-300 ${getSignalStyle(signal)} animate-pulse`}>
+                        {signal}
+                      </td>
+                    ))}
                   </tr>
-                  <tr key={`nq-${animationKey}`} className="border-b border-border/30">
+                  
+                  {/* /NQ Row - Always LONG */}
+                  <tr className="border-b border-border/30">
                     <td className="p-3 font-semibold text-cyan-400">/NQ</td>
                     <td className="p-3 text-green-400">21850.25</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    {momentumStates['/NQ']?.map((signal, index) => (
+                      <td key={index} className={`p-3 text-center font-semibold transition-all duration-300 ${getSignalStyle(signal)} animate-pulse`}>
+                        {signal}
+                      </td>
+                    ))}
                   </tr>
-                  <tr key={`gc-${animationKey}`} className="border-b border-border/30">
+                  
+                  {/* /GC Row */}
+                  <tr className="border-b border-border/30">
                     <td className="p-3 font-semibold text-cyan-400">/GC</td>
                     <td className="p-3 text-green-400">2642.80</td>
-                    <td className="p-3 text-center bg-red-500 text-white font-semibold animate-pulse">SHORT</td>
-                    <td className="p-3 text-center bg-fuchsia-500 text-white font-semibold animate-pulse">WeakShort</td>
-                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold animate-pulse">HOLD</td>
-                    <td className="p-3 text-center bg-blue-500 text-white font-semibold animate-pulse">WeakBuy</td>
-                    <td className="p-3 text-center bg-red-800 text-white font-semibold animate-pulse">StrongShort</td>
-                    <td className="p-3 text-center bg-red-500 text-white font-semibold animate-pulse">SHORT</td>
-                    <td className="p-3 text-center bg-blue-500 text-white font-semibold animate-pulse">WeakBuy</td>
-                    <td className="p-3 text-center bg-green-800 text-white font-semibold animate-pulse">StrongBuy</td>
-                    <td className="p-3 text-center bg-red-500 text-white font-semibold animate-pulse">SHORT</td>
-                    <td className="p-3 text-center bg-red-500 text-white font-semibold animate-pulse">SHORT</td>
-                    <td className="p-3 text-center bg-blue-500 text-white font-semibold animate-pulse">WeakBuy</td>
-                    <td className="p-3 text-center bg-green-800 text-white font-semibold animate-pulse">StrongBuy</td>
-                    <td className="p-3 text-center bg-blue-500 text-white font-semibold animate-pulse">WeakBuy</td>
-                    <td className="p-3 text-center bg-green-800 text-white font-semibold animate-pulse">StrongBuy</td>
-                    <td className="p-3 text-center bg-green-800 text-white font-semibold animate-pulse">StrongBuy</td>
-                    <td className="p-3 text-center bg-red-500 text-white font-semibold animate-pulse">SHORT</td>
+                    {momentumStates['/GC']?.map((signal, index) => (
+                      <td key={index} className={`p-3 text-center font-semibold transition-all duration-300 ${getSignalStyle(signal)}`}>
+                        {signal}
+                      </td>
+                    ))}
                   </tr>
-                  <tr key={`cl-${animationKey}`} className="border-b border-border/30">
+                  
+                  {/* /CL Row */}
+                  <tr className="border-b border-border/30">
                     <td className="p-3 font-semibold text-cyan-400">/CL</td>
                     <td className="p-3 text-green-400">73.42</td>
-                    <td className="p-3 text-center bg-blue-500 text-white font-semibold animate-pulse">WeakBuy</td>
-                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold animate-pulse">HOLD</td>
-                    <td className="p-3 text-center bg-red-500 text-white font-semibold animate-pulse">SHORT</td>
-                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
-                    <td className="p-3 text-center bg-fuchsia-500 text-white font-semibold animate-pulse">WeakShort</td>
-                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold animate-pulse">HOLD</td>
-                    <td className="p-3 text-center bg-red-800 text-white font-semibold animate-pulse">StrongShort</td>
-                    <td className="p-3 text-center bg-blue-500 text-white font-semibold animate-pulse">WeakBuy</td>
-                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold animate-pulse">HOLD</td>
-                    <td className="p-3 text-center bg-red-800 text-white font-semibold animate-pulse">StrongShort</td>
-                    <td className="p-3 text-center bg-blue-500 text-white font-semibold animate-pulse">WeakBuy</td>
-                    <td className="p-3 text-center bg-blue-500 text-white font-semibold animate-pulse">WeakBuy</td>
-                    <td className="p-3 text-center bg-red-800 text-white font-semibold animate-pulse">StrongShort</td>
-                    <td className="p-3 text-center bg-blue-500 text-white font-semibold animate-pulse">WeakBuy</td>
-                    <td className="p-3 text-center bg-blue-500 text-white font-semibold animate-pulse">WeakBuy</td>
-                    <td className="p-3 text-center bg-blue-500 text-white font-semibold animate-pulse">WeakBuy</td>
+                    {momentumStates['/CL']?.map((signal, index) => (
+                      <td key={index} className={`p-3 text-center font-semibold transition-all duration-300 ${getSignalStyle(signal)}`}>
+                        {signal}
+                      </td>
+                    ))}
                   </tr>
                 </tbody>
               </table>

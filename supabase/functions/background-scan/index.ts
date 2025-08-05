@@ -126,14 +126,48 @@ function getActiveFutures(): Array<{symbol: string, name: string, expiration: st
 // Fetch real-time futures quote from Finnhub
 async function fetchFuturesQuote(symbol: string, apiKey: string) {
   try {
+    console.log(`🔗 Calling Finnhub API: https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${apiKey.slice(0, 8)}...`);
     const response = await fetch(`https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${apiKey}`);
+    
+    console.log(`📡 Response status: ${response.status} for ${symbol}`);
+    
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`❌ HTTP error for ${symbol}! status: ${response.status}, body: ${errorText}`);
       throw new Error(`HTTP error! status: ${response.status}`);
     }
+    
     const data = await response.json();
+    console.log(`✅ Raw API data for ${symbol}:`, JSON.stringify(data, null, 2));
+    
+    // Check if we got valid data
+    if (data.c === 0 && data.pc === 0) {
+      console.log(`⚠️ Got zero/empty data for ${symbol}, trying alternative symbols...`);
+      
+      // Try alternative symbol formats
+      const altSymbols = [
+        `${symbol.replace('=F', '')}`, // Remove =F suffix
+        `${symbol.replace('=F', '1!')}`, // Try with 1! suffix
+        symbol.replace('=F', '=F1'), // Try with F1 suffix
+      ];
+      
+      for (const altSymbol of altSymbols) {
+        console.log(`🔄 Trying alternative symbol: ${altSymbol}`);
+        const altResponse = await fetch(`https://finnhub.io/api/v1/quote?symbol=${altSymbol}&token=${apiKey}`);
+        if (altResponse.ok) {
+          const altData = await altResponse.json();
+          console.log(`📊 Alternative data for ${altSymbol}:`, JSON.stringify(altData, null, 2));
+          if (altData.c > 0) {
+            console.log(`✅ Found valid data with ${altSymbol}!`);
+            return altData;
+          }
+        }
+      }
+    }
+    
     return data;
   } catch (error) {
-    console.error(`Error fetching quote for ${symbol}:`, error);
+    console.error(`❌ Error fetching quote for ${symbol}:`, error);
     return null;
   }
 }

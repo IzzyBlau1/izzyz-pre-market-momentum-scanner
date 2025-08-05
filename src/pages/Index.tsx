@@ -17,20 +17,20 @@ interface StockScan {
   estimated_float: number;
   catalyst: string;
   momo1_signals: {
-    '1m'?: 'up' | 'down' | 'neutral';
-    '5m'?: 'up' | 'down' | 'neutral';
-    '15m'?: 'up' | 'down' | 'neutral';
-    '1h'?: 'up' | 'down' | 'neutral';
-    '4h'?: 'up' | 'down' | 'neutral';
-    'daily'?: 'up' | 'down' | 'neutral';
+    '1m'?: 'bullish' | 'bearish' | 'neutral';
+    '5m'?: 'bullish' | 'bearish' | 'neutral';
+    '15m'?: 'bullish' | 'bearish' | 'neutral';
+    '1h'?: 'bullish' | 'bearish' | 'neutral';
+    '4h'?: 'bullish' | 'bearish' | 'neutral';
+    '1d'?: 'bullish' | 'bearish' | 'neutral';
   };
   momo2_signals: {
-    '1m'?: 'up' | 'down' | 'neutral';
-    '5m'?: 'up' | 'down' | 'neutral';
-    '15m'?: 'up' | 'down' | 'neutral';
-    '1h'?: 'up' | 'down' | 'neutral';
-    '4h'?: 'up' | 'down' | 'neutral';
-    'daily'?: 'up' | 'down' | 'neutral';
+    '1m'?: 'bullish' | 'bearish' | 'neutral';
+    '5m'?: 'bullish' | 'bearish' | 'neutral';
+    '15m'?: 'bullish' | 'bearish' | 'neutral';
+    '1h'?: 'bullish' | 'bearish' | 'neutral';
+    '4h'?: 'bullish' | 'bearish' | 'neutral';
+    '1d'?: 'bullish' | 'bearish' | 'neutral';
   };
   scan_timestamp: string;
   created_at: string;
@@ -149,8 +149,8 @@ const Index = () => {
 
   const getMomentumColor = (direction: string | undefined) => {
     switch (direction) {
-      case "up": return "bg-green-500";
-      case "down": return "bg-red-500";
+      case "bullish": return "bg-green-500";
+      case "bearish": return "bg-red-500";
       case "neutral": return "bg-yellow-500";
       default: return "bg-gray-400";
     }
@@ -222,52 +222,52 @@ const Index = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {scanResults.map((stock, stockIndex) => (
-                    <React.Fragment key={stock.id}>
-                      {/* MoMo1 Row */}
-                      <tr className={stockIndex % 2 === 0 ? "bg-background" : "bg-muted/30"}>
-                        <td className="border border-border p-3 font-semibold" rowSpan={2}>
-                          {stock.symbol}
-                        </td>
-                        <td className="border border-border p-3 text-center" rowSpan={2}>
-                          {stock.company_name || 'N/A'}
-                        </td>
-                        <td className="border border-border p-3 text-center" rowSpan={2}>
-                          ${stock.price.toFixed(2)}
-                        </td>
-                        <td className={`border border-border p-3 text-center font-semibold ${
-                          stock.change_percent >= 0 ? 'text-green-600' : 'text-red-600'
-                        }`} rowSpan={2}>
-                          {stock.change_percent >= 0 ? '+' : ''}{stock.change_percent.toFixed(1)}%
-                        </td>
-                        <td className="border border-border p-3 text-center" rowSpan={2}>
-                          {stock.volume.toLocaleString()}
-                        </td>
-                        <td className="border border-border p-3 text-center" rowSpan={2}>
-                          Mar 2025
-                        </td>
-                        <td className="border border-border p-3 text-center text-sm font-semibold">
-                          MoMo1
-                        </td>
-                        {(["1m", "5m", "15m", "30m", "1h", "4h", "1d"] as const).map((timeframe) => (
-                          <td key={`momo1-${timeframe}`} className="border border-border p-3 text-center">
-                            <div className={`w-4 h-4 mx-auto rounded-full ${getMomentumColor(stock.momo1_signals[timeframe])}`}></div>
-                          </td>
-                        ))}
-                      </tr>
-                      {/* MoMo2 Row */}
-                      <tr className={stockIndex % 2 === 0 ? "bg-background" : "bg-muted/30"}>
-                        <td className="border border-border p-3 text-center text-sm font-semibold">
-                          MoMo2
-                        </td>
-                        {(["1m", "5m", "15m", "30m", "1h", "4h", "1d"] as const).map((timeframe) => (
-                          <td key={`momo2-${timeframe}`} className="border border-border p-3 text-center">
-                            <div className={`w-4 h-4 mx-auto rounded-full ${getMomentumColor(stock.momo2_signals[timeframe])}`}></div>
-                          </td>
-                        ))}
-                      </tr>
-                    </React.Fragment>
-                  ))}
+                   {scanResults.map((stock, stockIndex) => (
+                     <>
+                       {/* MoMo1 Row */}
+                       <tr key={`${stock.id}-momo1`} className={stockIndex % 2 === 0 ? "bg-background" : "bg-muted/30"}>
+                         <td className="border border-border p-3 font-semibold" rowSpan={2}>
+                           {stock.symbol}
+                         </td>
+                         <td className="border border-border p-3 text-center" rowSpan={2}>
+                           {stock.company_name || 'N/A'}
+                         </td>
+                         <td className="border border-border p-3 text-center" rowSpan={2}>
+                           ${stock.price.toFixed(2)}
+                         </td>
+                         <td className={`border border-border p-3 text-center font-semibold ${
+                           stock.change_percent >= 0 ? 'text-green-600' : 'text-red-600'
+                         }`} rowSpan={2}>
+                           {stock.change_percent >= 0 ? '+' : ''}{stock.change_percent.toFixed(1)}%
+                         </td>
+                         <td className="border border-border p-3 text-center" rowSpan={2}>
+                           {stock.volume.toLocaleString()}
+                         </td>
+                         <td className="border border-border p-3 text-center" rowSpan={2}>
+                           Mar 2025
+                         </td>
+                         <td className="border border-border p-3 text-center text-sm font-semibold">
+                           MoMo1
+                         </td>
+                         {(["1m", "5m", "15m", "30m", "1h", "4h", "1d"] as const).map((timeframe) => (
+                           <td key={`momo1-${timeframe}`} className="border border-border p-3 text-center">
+                             <div className={`w-4 h-4 mx-auto rounded-full ${getMomentumColor(stock.momo1_signals[timeframe])}`}></div>
+                           </td>
+                         ))}
+                       </tr>
+                       {/* MoMo2 Row */}
+                       <tr key={`${stock.id}-momo2`} className={stockIndex % 2 === 0 ? "bg-background" : "bg-muted/30"}>
+                         <td className="border border-border p-3 text-center text-sm font-semibold">
+                           MoMo2
+                         </td>
+                         {(["1m", "5m", "15m", "30m", "1h", "4h", "1d"] as const).map((timeframe) => (
+                           <td key={`momo2-${timeframe}`} className="border border-border p-3 text-center">
+                             <div className={`w-4 h-4 mx-auto rounded-full ${getMomentumColor(stock.momo2_signals[timeframe])}`}></div>
+                           </td>
+                         ))}
+                       </tr>
+                     </>
+                   ))}
                 </tbody>
               </table>
             </div>

@@ -176,7 +176,7 @@ const Index = () => {
           <div className="flex items-center justify-center gap-2 text-xl text-muted-foreground mb-4">
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse"></div>
-              <span>Live Auto-Scanning Every 30 Seconds</span>
+              <span>Live Auto-Scanning Every 2 Minutes</span>
             </div>
           </div>
           <div className="flex flex-col items-center gap-2">

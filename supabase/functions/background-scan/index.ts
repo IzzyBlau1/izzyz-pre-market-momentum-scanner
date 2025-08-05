@@ -11,14 +11,114 @@ const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
 const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-// Get active futures contracts with correct symbols
+// Get the current active contract month and year
+function getCurrentContractInfo() {
+  const now = new Date();
+  const currentMonth = now.getMonth() + 1; // 1-12
+  const currentYear = now.getFullYear();
+  
+  // Futures contracts expire on the 3rd Friday of the expiration month
+  // We roll to the next contract about 1-2 weeks before expiration
+  
+  let contractMonth: string;
+  let contractYear: number;
+  let monthCode: string;
+  
+  // Determine which quarterly contract is active (Mar, Jun, Sep, Dec)
+  if (currentMonth <= 2 || (currentMonth === 3 && now.getDate() < 8)) {
+    // Use March contract
+    contractMonth = 'MAR';
+    monthCode = 'H';
+    contractYear = currentYear;
+  } else if (currentMonth <= 5 || (currentMonth === 6 && now.getDate() < 8)) {
+    // Use June contract
+    contractMonth = 'JUN';
+    monthCode = 'M';
+    contractYear = currentYear;
+  } else if (currentMonth <= 8 || (currentMonth === 9 && now.getDate() < 8)) {
+    // Use September contract
+    contractMonth = 'SEP';
+    monthCode = 'U';
+    contractYear = currentYear;
+  } else {
+    // Use December contract
+    contractMonth = 'DEC';
+    monthCode = 'Z';
+    contractYear = currentYear;
+  }
+  
+  // For contracts in December, if we're close to expiration, roll to next year's March
+  if (contractMonth === 'DEC' && currentMonth === 12 && now.getDate() > 8) {
+    contractMonth = 'MAR';
+    monthCode = 'H';
+    contractYear = currentYear + 1;
+  }
+  
+  const yearSuffix = contractYear.toString().slice(-2); // Last 2 digits of year
+  
+  return {
+    contractMonth,
+    monthCode,
+    yearSuffix,
+    contractYear,
+    expirationDate: getExpirationDate(contractMonth, contractYear)
+  };
+}
+
+// Calculate the 3rd Friday of the given month/year
+function getExpirationDate(month: string, year: number): string {
+  const monthMap: {[key: string]: number} = {
+    'MAR': 2, 'JUN': 5, 'SEP': 8, 'DEC': 11
+  };
+  
+  const monthIndex = monthMap[month];
+  const firstDay = new Date(year, monthIndex, 1);
+  const firstFriday = new Date(year, monthIndex, 1 + (5 - firstDay.getDay() + 7) % 7);
+  const thirdFriday = new Date(firstFriday.getTime() + 14 * 24 * 60 * 60 * 1000);
+  
+  return thirdFriday.toISOString().split('T')[0]; // YYYY-MM-DD format
+}
+
+// Get active futures contracts with dynamic contract months
 function getActiveFutures(): Array<{symbol: string, name: string, expiration: string, contractMonth: string, finnhubSymbol: string}> {
+  const { contractMonth, monthCode, yearSuffix, expirationDate } = getCurrentContractInfo();
+  
   return [
-    { symbol: 'NQU25', name: 'E-mini NASDAQ 100', expiration: '2025-09-19', contractMonth: 'SEP25', finnhubSymbol: 'NQ' },
-    { symbol: 'ESU25', name: 'E-mini S&P 500', expiration: '2025-09-19', contractMonth: 'SEP25', finnhubSymbol: 'ES' },
-    { symbol: 'YMU25', name: 'E-mini Dow Jones', expiration: '2025-09-19', contractMonth: 'SEP25', finnhubSymbol: 'YM' },
-    { symbol: 'RTYU25', name: 'E-mini Russell 2000', expiration: '2025-09-19', contractMonth: 'SEP25', finnhubSymbol: 'RTY' },
-    { symbol: 'VXU25', name: 'VIX Futures', expiration: '2025-09-17', contractMonth: 'SEP25', finnhubSymbol: 'VIX' }
+    { 
+      symbol: `NQ${monthCode}${yearSuffix}`, 
+      name: 'E-mini NASDAQ 100', 
+      expiration: expirationDate, 
+      contractMonth: `${contractMonth}${yearSuffix}`, 
+      finnhubSymbol: 'NQ' 
+    },
+    { 
+      symbol: `ES${monthCode}${yearSuffix}`, 
+      name: 'E-mini S&P 500', 
+      expiration: expirationDate, 
+      contractMonth: `${contractMonth}${yearSuffix}`, 
+      finnhubSymbol: 'ES' 
+    },
+    { 
+      symbol: `YM${monthCode}${yearSuffix}`, 
+      name: 'E-mini Dow Jones', 
+      expiration: expirationDate, 
+      contractMonth: `${contractMonth}${yearSuffix}`, 
+      finnhubSymbol: 'YM' 
+    },
+    { 
+      symbol: `RTY${monthCode}${yearSuffix}`, 
+      name: 'E-mini Russell 2000', 
+      expiration: expirationDate, 
+      contractMonth: `${contractMonth}${yearSuffix}`, 
+      finnhubSymbol: 'RTY' 
+    },
+    { 
+      symbol: `VX${monthCode}${yearSuffix}`, 
+      name: 'VIX Futures', 
+      expiration: expirationDate, 
+      contractMonth: `${contractMonth}${yearSuffix}`, 
+      finnhubSymbol: 'VIX' 
+    }
   ];
 }
 
@@ -70,7 +170,7 @@ async function performFuturesScan() {
 
   for (const futuresContract of activeFutures) {
     try {
-      console.log(`Processing ${futuresContract.symbol} (${futuresContract.finnhubSymbol})`);
+      console.log(`Processing ${futuresContract.symbol} (${futuresContract.finnhubSymbol}) - Contract: ${futuresContract.contractMonth}`);
 
       // Fetch real quote data from Finnhub
       const quote = await fetchFuturesQuote(futuresContract.finnhubSymbol, finnhubApiKey);

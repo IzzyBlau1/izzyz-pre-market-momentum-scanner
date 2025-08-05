@@ -16,6 +16,8 @@ interface StockScan {
   volume_spike: number;
   estimated_float: number;
   catalyst: string;
+  contract_month?: string;
+  expiration_date?: string;
   momo1_signals: {
     '1m'?: 'bullish' | 'bearish' | 'neutral';
     '5m'?: 'bullish' | 'bearish' | 'neutral';
@@ -244,7 +246,7 @@ const Index = () => {
                            {stock.volume.toLocaleString()}
                          </td>
                          <td className="border border-border p-3 text-center" rowSpan={2}>
-                           Sep 2025
+                           {stock.contract_month || 'N/A'}
                          </td>
                          <td className="border border-border p-3 text-center text-sm font-semibold">
                            MoMo1

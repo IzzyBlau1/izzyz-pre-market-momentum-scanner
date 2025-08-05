@@ -2,8 +2,18 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, BarChart3, Zap, Monitor, Users, Shield, ChevronRight, Star, Check } from "lucide-react";
+import { useState, useEffect } from "react";
 
 const LandingPage = () => {
+  const [animationKey, setAnimationKey] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setAnimationKey(prev => prev + 1);
+    }, 2000);
+    return () => clearInterval(interval);
+  }, []);
+
   const features = [
     {
       icon: TrendingUp,
@@ -152,49 +162,49 @@ const LandingPage = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr className="border-b border-border/30">
+                  <tr key={`amd-${animationKey}`} className="border-b border-border/30">
                     <td className="p-3 font-semibold text-cyan-400">AMD</td>
-                    <td className="p-3 text-green-400">142.01</td>
-                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
-                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
-                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
-                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
-                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
-                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
-                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
-                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
-                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
-                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
-                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
-                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
-                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
-                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
-                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
-                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
+                    <td className="p-3 text-green-400">152.34</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-blue-500 text-white font-semibold animate-pulse">WeakBuy</td>
+                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold animate-pulse">HOLD</td>
+                    <td className="p-3 text-center bg-red-500 text-white font-semibold animate-pulse">SHORT</td>
+                    <td className="p-3 text-center bg-green-800 text-white font-semibold animate-pulse">StrongBuy</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-fuchsia-500 text-white font-semibold animate-pulse">WeakShort</td>
+                    <td className="p-3 text-center bg-green-800 text-white font-semibold animate-pulse">StrongBuy</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
                   </tr>
-                  <tr className="border-b border-border/30">
+                  <tr key={`nvda-${animationKey}`} className="border-b border-border/30">
                     <td className="p-3 font-semibold text-cyan-400">NVDA</td>
-                    <td className="p-3 text-green-400">138.25</td>
-                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
-                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
-                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
-                    <td className="p-3 text-center bg-green-800 text-white font-semibold">StrongBuy</td>
-                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
-                    <td className="p-3 text-center bg-green-800 text-white font-semibold">StrongBuy</td>
-                    <td className="p-3 text-center bg-red-500 text-white font-semibold">SHORT</td>
-                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
-                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
-                    <td className="p-3 text-center bg-green-800 text-white font-semibold">StrongBuy</td>
-                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
-                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
-                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
-                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
-                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
-                    <td className="p-3 text-center bg-green-800 text-white font-semibold">StrongBuy</td>
+                    <td className="p-3 text-green-400">139.76</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
                   </tr>
-                  <tr className="border-b border-border/30">
+                  <tr key={`tsla-${animationKey}`} className="border-b border-border/30">
                     <td className="p-3 font-semibold text-cyan-400">TSLA</td>
-                    <td className="p-3 text-green-400">394.25</td>
+                    <td className="p-3 text-green-400">248.67</td>
                     <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
                     <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
                     <td className="p-3 text-center bg-fuchsia-500 text-white font-semibold">WeakShort</td>
@@ -212,9 +222,9 @@ const LandingPage = () => {
                     <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
                     <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
                   </tr>
-                  <tr className="border-b border-border/30">
+                  <tr key={`msft-${animationKey}`} className="border-b border-border/30">
                     <td className="p-3 font-semibold text-cyan-400">MSFT</td>
-                    <td className="p-3 text-green-400">438.75</td>
+                    <td className="p-3 text-green-400">421.89</td>
                     <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
                     <td className="p-3 text-center bg-green-800 text-white font-semibold">StrongBuy</td>
                     <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
@@ -232,9 +242,9 @@ const LandingPage = () => {
                     <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
                     <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
                   </tr>
-                  <tr className="border-b border-border/30">
+                  <tr key={`aapl-${animationKey}`} className="border-b border-border/30">
                     <td className="p-3 font-semibold text-cyan-400">AAPL</td>
-                    <td className="p-3 text-green-400">225.50</td>
+                    <td className="p-3 text-green-400">234.56</td>
                     <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
                     <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
                     <td className="p-3 text-center bg-blue-500 text-white font-semibold">WeakBuy</td>
@@ -252,25 +262,85 @@ const LandingPage = () => {
                     <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
                     <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
                   </tr>
-                  <tr className="border-b border-border/30">
+                  <tr key={`spy-${animationKey}`} className="border-b border-border/30">
                     <td className="p-3 font-semibold text-cyan-400">SPY</td>
-                    <td className="p-3 text-green-400">622.95</td>
-                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
-                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
-                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
-                    <td className="p-3 text-center bg-green-800 text-white font-semibold">StrongBuy</td>
-                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
-                    <td className="p-3 text-center bg-green-800 text-white font-semibold">StrongBuy</td>
-                    <td className="p-3 text-center bg-blue-500 text-white font-semibold">WeakBuy</td>
-                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
-                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
-                    <td className="p-3 text-center bg-green-800 text-white font-semibold">StrongBuy</td>
-                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
-                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
-                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
-                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
-                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
-                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
+                    <td className="p-3 text-green-400">598.12</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                  </tr>
+                  <tr key={`nq-${animationKey}`} className="border-b border-border/30">
+                    <td className="p-3 font-semibold text-cyan-400">/NQ</td>
+                    <td className="p-3 text-green-400">21850.25</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                  </tr>
+                  <tr key={`gc-${animationKey}`} className="border-b border-border/30">
+                    <td className="p-3 font-semibold text-cyan-400">/GC</td>
+                    <td className="p-3 text-green-400">2642.80</td>
+                    <td className="p-3 text-center bg-red-500 text-white font-semibold animate-pulse">SHORT</td>
+                    <td className="p-3 text-center bg-fuchsia-500 text-white font-semibold animate-pulse">WeakShort</td>
+                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold animate-pulse">HOLD</td>
+                    <td className="p-3 text-center bg-blue-500 text-white font-semibold animate-pulse">WeakBuy</td>
+                    <td className="p-3 text-center bg-red-800 text-white font-semibold animate-pulse">StrongShort</td>
+                    <td className="p-3 text-center bg-red-500 text-white font-semibold animate-pulse">SHORT</td>
+                    <td className="p-3 text-center bg-blue-500 text-white font-semibold animate-pulse">WeakBuy</td>
+                    <td className="p-3 text-center bg-green-800 text-white font-semibold animate-pulse">StrongBuy</td>
+                    <td className="p-3 text-center bg-red-500 text-white font-semibold animate-pulse">SHORT</td>
+                    <td className="p-3 text-center bg-red-500 text-white font-semibold animate-pulse">SHORT</td>
+                    <td className="p-3 text-center bg-blue-500 text-white font-semibold animate-pulse">WeakBuy</td>
+                    <td className="p-3 text-center bg-green-800 text-white font-semibold animate-pulse">StrongBuy</td>
+                    <td className="p-3 text-center bg-blue-500 text-white font-semibold animate-pulse">WeakBuy</td>
+                    <td className="p-3 text-center bg-green-800 text-white font-semibold animate-pulse">StrongBuy</td>
+                    <td className="p-3 text-center bg-green-800 text-white font-semibold animate-pulse">StrongBuy</td>
+                    <td className="p-3 text-center bg-red-500 text-white font-semibold animate-pulse">SHORT</td>
+                  </tr>
+                  <tr key={`cl-${animationKey}`} className="border-b border-border/30">
+                    <td className="p-3 font-semibold text-cyan-400">/CL</td>
+                    <td className="p-3 text-green-400">73.42</td>
+                    <td className="p-3 text-center bg-blue-500 text-white font-semibold animate-pulse">WeakBuy</td>
+                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold animate-pulse">HOLD</td>
+                    <td className="p-3 text-center bg-red-500 text-white font-semibold animate-pulse">SHORT</td>
+                    <td className="p-3 text-center bg-green-400 text-white font-semibold animate-pulse">LONG</td>
+                    <td className="p-3 text-center bg-fuchsia-500 text-white font-semibold animate-pulse">WeakShort</td>
+                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold animate-pulse">HOLD</td>
+                    <td className="p-3 text-center bg-red-800 text-white font-semibold animate-pulse">StrongShort</td>
+                    <td className="p-3 text-center bg-blue-500 text-white font-semibold animate-pulse">WeakBuy</td>
+                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold animate-pulse">HOLD</td>
+                    <td className="p-3 text-center bg-red-800 text-white font-semibold animate-pulse">StrongShort</td>
+                    <td className="p-3 text-center bg-blue-500 text-white font-semibold animate-pulse">WeakBuy</td>
+                    <td className="p-3 text-center bg-blue-500 text-white font-semibold animate-pulse">WeakBuy</td>
+                    <td className="p-3 text-center bg-red-800 text-white font-semibold animate-pulse">StrongShort</td>
+                    <td className="p-3 text-center bg-blue-500 text-white font-semibold animate-pulse">WeakBuy</td>
+                    <td className="p-3 text-center bg-blue-500 text-white font-semibold animate-pulse">WeakBuy</td>
+                    <td className="p-3 text-center bg-blue-500 text-white font-semibold animate-pulse">WeakBuy</td>
                   </tr>
                 </tbody>
               </table>

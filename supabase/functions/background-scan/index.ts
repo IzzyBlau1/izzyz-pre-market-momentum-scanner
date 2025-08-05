@@ -82,12 +82,14 @@ async function performFuturesScan() {
         scan_timestamp: new Date().toISOString()
       };
 
-      const { error: insertError } = await supabase
+      const { error: upsertError } = await supabase
         .from('momentum_scans')
-        .insert(futuresData);
+        .upsert(futuresData, {
+          onConflict: 'symbol'
+        });
 
-      if (insertError) {
-        console.error(`Error inserting ${futuresContract.symbol}:`, insertError);
+      if (upsertError) {
+        console.error(`Error upserting ${futuresContract.symbol}:`, upsertError);
       } else {
         results.push(futuresData);
         console.log(`✅ Updated ${futuresContract.symbol} momentum data`);

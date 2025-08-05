@@ -158,6 +158,38 @@ const Index = () => {
     }
   };
 
+  const getMomentumTextColor = (direction: string | undefined) => {
+    switch (direction) {
+      case "bullish": return "text-green-400";
+      case "bearish": return "text-red-400";
+      case "neutral": return "text-yellow-400";
+      default: return "text-gray-400";
+    }
+  };
+
+  const getMomentumBgColor = (direction: string | undefined) => {
+    switch (direction) {
+      case "bullish": return "bg-green-900/30 border-green-500/50";
+      case "bearish": return "bg-red-900/30 border-red-500/50";
+      case "neutral": return "bg-yellow-900/30 border-yellow-500/50";
+      default: return "bg-gray-900/30 border-gray-500/50";
+    }
+  };
+
+  const getMomentumStatus = (momo1: any, momo2: any) => {
+    const momo1Signals = Object.values(momo1 || {});
+    const momo2Signals = Object.values(momo2 || {});
+    
+    const bullishCount = [...momo1Signals, ...momo2Signals].filter(s => s === 'bullish').length;
+    const bearishCount = [...momo1Signals, ...momo2Signals].filter(s => s === 'bearish').length;
+    
+    if (bullishCount >= 5) return { status: 'GOING LONG', color: 'text-green-400', bg: 'bg-green-900/50' };
+    if (bearishCount >= 5) return { status: 'GOING SHORT', color: 'text-red-400', bg: 'bg-red-900/50' };
+    if (bullishCount > bearishCount) return { status: 'BULLISH TERRITORY', color: 'text-green-300', bg: 'bg-green-900/30' };
+    if (bearishCount > bullishCount) return { status: 'BEARISH TERRITORY', color: 'text-red-300', bg: 'bg-red-900/30' };
+    return { status: 'NO MOMENTUM', color: 'text-gray-400', bg: 'bg-gray-900/30' };
+  };
+
   const formatFloat = (float: number) => {
     if (float >= 1000000) {
       return `${(float / 1000000).toFixed(1)}M`;
@@ -199,82 +231,107 @@ const Index = () => {
           )}
         </div>
 
-        {/* Results Table */}
+        {/* Professional Multi-Timeframe Display */}
         {scanResults.length > 0 && (
-          <div className="space-y-4">
-            <h2 className="text-2xl font-semibold text-foreground mb-4">
-              Index Futures ({scanResults.length} instruments)
+          <div className="space-y-6">
+            <h2 className="text-3xl font-bold text-center text-white mb-6">
+              🚀 Index Futures - Real-Time Momentum Analysis ({scanResults.length} instruments)
             </h2>
             
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse border border-border bg-card rounded-lg">
-                <thead>
-                  <tr className="bg-muted">
-                    <th className="border border-border p-3 text-left font-semibold">Symbol</th>
-                    <th className="border border-border p-3 text-center font-semibold">Contract</th>
-                    <th className="border border-border p-3 text-center font-semibold">Price</th>
-                    <th className="border border-border p-3 text-center font-semibold">Change %</th>
-                    <th className="border border-border p-3 text-center font-semibold">Volume</th>
-                    <th className="border border-border p-3 text-center font-semibold">Expiration</th>
-                    <th className="border border-border p-3 text-center font-semibold">Momentum</th>
-                    <th className="border border-border p-3 text-center font-semibold text-xs">1m</th>
-                    <th className="border border-border p-3 text-center font-semibold text-xs">5m</th>
-                    <th className="border border-border p-3 text-center font-semibold text-xs">15m</th>
-                    <th className="border border-border p-3 text-center font-semibold text-xs">30m</th>
-                    <th className="border border-border p-3 text-center font-semibold text-xs">1h</th>
-                    <th className="border border-border p-3 text-center font-semibold text-xs">4h</th>
-                    <th className="border border-border p-3 text-center font-semibold text-xs">1d</th>
-                  </tr>
-                </thead>
-                <tbody>
-                   {scanResults.map((stock, stockIndex) => (
-                     <>
-                       {/* MoMo1 Row */}
-                       <tr key={`${stock.id}-momo1`} className={stockIndex % 2 === 0 ? "bg-background" : "bg-muted/30"}>
-                         <td className="border border-border p-3 font-semibold" rowSpan={2}>
-                           {stock.symbol}
-                         </td>
-                         <td className="border border-border p-3 text-center" rowSpan={2}>
-                           {stock.company_name || 'N/A'}
-                         </td>
-                         <td className="border border-border p-3 text-center" rowSpan={2}>
-                           ${stock.price.toFixed(2)}
-                         </td>
-                         <td className={`border border-border p-3 text-center font-semibold ${
-                           stock.change_percent >= 0 ? 'text-green-600' : 'text-red-600'
-                         }`} rowSpan={2}>
-                           {stock.change_percent >= 0 ? '+' : ''}{stock.change_percent.toFixed(1)}%
-                         </td>
-                         <td className="border border-border p-3 text-center" rowSpan={2}>
-                           {stock.volume.toLocaleString()}
-                         </td>
-                         <td className="border border-border p-3 text-center" rowSpan={2}>
-                           {stock.contract_month || 'N/A'}
-                         </td>
-                         <td className="border border-border p-3 text-center text-sm font-semibold">
-                           MoMo1
-                         </td>
-                         {(["1m", "5m", "15m", "30m", "1h", "4h", "1d"] as const).map((timeframe) => (
-                           <td key={`momo1-${timeframe}`} className="border border-border p-3 text-center">
-                             <div className={`w-4 h-4 mx-auto rounded-full ${getMomentumColor(stock.momo1_signals[timeframe])}`}></div>
-                           </td>
-                         ))}
-                       </tr>
-                       {/* MoMo2 Row */}
-                       <tr key={`${stock.id}-momo2`} className={stockIndex % 2 === 0 ? "bg-background" : "bg-muted/30"}>
-                         <td className="border border-border p-3 text-center text-sm font-semibold">
-                           MoMo2
-                         </td>
-                         {(["1m", "5m", "15m", "30m", "1h", "4h", "1d"] as const).map((timeframe) => (
-                           <td key={`momo2-${timeframe}`} className="border border-border p-3 text-center">
-                             <div className={`w-4 h-4 mx-auto rounded-full ${getMomentumColor(stock.momo2_signals[timeframe])}`}></div>
-                           </td>
-                         ))}
-                       </tr>
-                     </>
-                   ))}
-                </tbody>
-              </table>
+            <div className="space-y-6">
+              {scanResults.map((stock, index) => {
+                const momentumStatus = getMomentumStatus(stock.momo1_signals, stock.momo2_signals);
+                return (
+                  <div key={stock.id || index} className={`p-6 rounded-xl border-2 ${momentumStatus.bg} border-gray-600`}>
+                    {/* Header Section */}
+                    <div className="flex justify-between items-start mb-6">
+                      <div>
+                        <h3 className="text-3xl font-bold text-white">{stock.symbol}</h3>
+                        <p className="text-xl text-gray-300">{stock.company_name}</p>
+                        <div className="flex gap-4 text-sm text-gray-400 mt-1">
+                          <span>Contract: {stock.contract_month}</span>
+                          <span>Exp: {stock.expiration_date}</span>
+                          <span>Updated: {new Date(stock.scan_timestamp).toLocaleTimeString()}</span>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className={`text-2xl font-bold px-6 py-3 rounded-lg ${momentumStatus.color} bg-black/70 border border-gray-500`}>
+                          {momentumStatus.status}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Price Section */}
+                    <div className="grid grid-cols-4 gap-4 mb-6">
+                      <div className="bg-black/50 p-4 rounded-lg border border-gray-600">
+                        <div className="text-sm text-gray-400 uppercase tracking-wide">Price</div>
+                        <div className="text-2xl font-bold text-white">${stock.price.toFixed(2)}</div>
+                      </div>
+                      <div className="bg-black/50 p-4 rounded-lg border border-gray-600">
+                        <div className="text-sm text-gray-400 uppercase tracking-wide">Change</div>
+                        <div className={`text-2xl font-bold ${stock.change_percent >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                          {stock.change_percent >= 0 ? '+' : ''}{stock.change_percent.toFixed(2)}%
+                        </div>
+                      </div>
+                      <div className="bg-black/50 p-4 rounded-lg border border-gray-600">
+                        <div className="text-sm text-gray-400 uppercase tracking-wide">Volume</div>
+                        <div className="text-2xl font-bold text-white">{formatFloat(stock.volume)}</div>
+                      </div>
+                      <div className="bg-black/50 p-4 rounded-lg border border-gray-600">
+                        <div className="text-sm text-gray-400 uppercase tracking-wide">Vol Spike</div>
+                        <div className="text-2xl font-bold text-blue-400">{stock.volume_spike}x</div>
+                      </div>
+                    </div>
+
+                    {/* Multi-Timeframe Analysis Grid */}
+                    <div className="grid grid-cols-7 gap-3">
+                      {/* Timeframe Headers */}
+                      <div className="text-center font-bold text-white bg-black/70 p-3 rounded-lg">
+                        <div className="text-sm">TIMEFRAME</div>
+                      </div>
+                      {['1m', '5m', '15m', '30m', '1h', '4h', '1d'].map(tf => (
+                        <div key={tf} className="text-center font-bold text-white bg-black/70 p-3 rounded-lg">
+                          <div className="text-sm">{tf.toUpperCase()}</div>
+                        </div>
+                      ))}
+
+                      {/* MoMo1 Row */}
+                      <div className="bg-black/50 p-3 rounded-lg border border-gray-600">
+                        <div className="text-sm font-semibold text-white">MoMo1</div>
+                        <div className="text-xs text-gray-400">Stochastic</div>
+                      </div>
+                      {['1m', '5m', '15m', '30m', '1h', '4h', '1d'].map(timeframe => {
+                        const signal = stock.momo1_signals?.[timeframe as keyof typeof stock.momo1_signals];
+                        return (
+                          <div key={`momo1-${timeframe}`} className={`p-3 rounded-lg border-2 text-center ${getMomentumBgColor(signal)}`}>
+                            <div className={`font-bold uppercase text-sm ${getMomentumTextColor(signal)}`}>
+                              {signal === 'bullish' ? 'LONG' : signal === 'bearish' ? 'SHORT' : signal === 'neutral' ? 'NEUT' : 'N/A'}
+                            </div>
+                            <div className={`w-3 h-3 mx-auto mt-1 rounded-full ${getMomentumColor(signal)}`}></div>
+                          </div>
+                        );
+                      })}
+
+                      {/* MoMo2 Row */}
+                      <div className="bg-black/50 p-3 rounded-lg border border-gray-600">
+                        <div className="text-sm font-semibold text-white">MoMo2</div>
+                        <div className="text-xs text-gray-400">Williams %R</div>
+                      </div>
+                      {['1m', '5m', '15m', '30m', '1h', '4h', '1d'].map(timeframe => {
+                        const signal = stock.momo2_signals?.[timeframe as keyof typeof stock.momo2_signals];
+                        return (
+                          <div key={`momo2-${timeframe}`} className={`p-3 rounded-lg border-2 text-center ${getMomentumBgColor(signal)}`}>
+                            <div className={`font-bold uppercase text-sm ${getMomentumTextColor(signal)}`}>
+                              {signal === 'bullish' ? 'LONG' : signal === 'bearish' ? 'SHORT' : signal === 'neutral' ? 'NEUT' : 'N/A'}
+                            </div>
+                            <div className={`w-3 h-3 mx-auto mt-1 rounded-full ${getMomentumColor(signal)}`}></div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}

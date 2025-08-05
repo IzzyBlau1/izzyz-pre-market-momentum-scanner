@@ -11,14 +11,14 @@ const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
 const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-// Get active futures contracts
+// Get active futures contracts with correct symbols
 function getActiveFutures(): Array<{symbol: string, name: string, expiration: string, contractMonth: string, finnhubSymbol: string}> {
   return [
-    { symbol: 'NQ03-25', name: 'E-mini NASDAQ 100', expiration: '2025-03-21', contractMonth: 'MAR25', finnhubSymbol: 'NQ' },
-    { symbol: 'ES03-25', name: 'E-mini S&P 500', expiration: '2025-03-21', contractMonth: 'MAR25', finnhubSymbol: 'ES' },
-    { symbol: 'YM03-25', name: 'E-mini Dow Jones', expiration: '2025-03-21', contractMonth: 'MAR25', finnhubSymbol: 'YM' },
-    { symbol: 'RTY03-25', name: 'E-mini Russell 2000', expiration: '2025-03-21', contractMonth: 'MAR25', finnhubSymbol: 'RTY' },
-    { symbol: 'VX03-25', name: 'VIX Futures', expiration: '2025-03-21', contractMonth: 'MAR25', finnhubSymbol: 'VIX' }
+    { symbol: 'NQU25', name: 'E-mini NASDAQ 100', expiration: '2025-09-19', contractMonth: 'SEP25', finnhubSymbol: 'NQ' },
+    { symbol: 'ESU25', name: 'E-mini S&P 500', expiration: '2025-09-19', contractMonth: 'SEP25', finnhubSymbol: 'ES' },
+    { symbol: 'YMU25', name: 'E-mini Dow Jones', expiration: '2025-09-19', contractMonth: 'SEP25', finnhubSymbol: 'YM' },
+    { symbol: 'RTYU25', name: 'E-mini Russell 2000', expiration: '2025-09-19', contractMonth: 'SEP25', finnhubSymbol: 'RTY' },
+    { symbol: 'VXU25', name: 'VIX Futures', expiration: '2025-09-17', contractMonth: 'SEP25', finnhubSymbol: 'VIX' }
   ];
 }
 

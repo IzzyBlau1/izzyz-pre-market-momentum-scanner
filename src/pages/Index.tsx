@@ -244,7 +244,7 @@ const Index = () => {
                            {stock.volume.toLocaleString()}
                          </td>
                          <td className="border border-border p-3 text-center" rowSpan={2}>
-                           Mar 2025
+                           Sep 2025
                          </td>
                          <td className="border border-border p-3 text-center text-sm font-semibold">
                            MoMo1

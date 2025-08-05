@@ -117,6 +117,168 @@ const LandingPage = () => {
         </div>
       </header>
 
+      {/* Live Tool Showcase */}
+      <section className="py-8 px-4">
+        <div className="container mx-auto">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold mb-4">See Our Custom Column Tool in Action</h2>
+            <p className="text-lg text-muted-foreground">
+              Real momentum analysis across multiple timeframes for various instruments - all in one view
+            </p>
+          </div>
+          <div className="relative bg-card/50 backdrop-blur-sm rounded-lg border p-8 w-full mx-auto overflow-x-auto">
+            <div className="min-w-[1400px]">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border/50">
+                    <th className="text-left p-3 font-semibold bg-muted/30">Symbol</th>
+                    <th className="text-left p-3 font-semibold bg-muted/30">Last</th>
+                    <th className="text-center p-3 font-semibold bg-yellow-500/20">3m_STOCH_WR</th>
+                    <th className="text-center p-3 font-semibold bg-yellow-500/20">3m_TDI</th>
+                    <th className="text-center p-3 font-semibold bg-yellow-500/20">5M_STOCH_WR</th>
+                    <th className="text-center p-3 font-semibold bg-yellow-500/20">5m_TDI</th>
+                    <th className="text-center p-3 font-semibold bg-yellow-500/20">15m_STOCH...</th>
+                    <th className="text-center p-3 font-semibold bg-yellow-500/20">15m_TDI</th>
+                    <th className="text-center p-3 font-semibold bg-red-500/20">1H_STOCH_WR</th>
+                    <th className="text-center p-3 font-semibold bg-yellow-500/20">1h_TDI</th>
+                    <th className="text-center p-3 font-semibold bg-yellow-500/20">4H_STOCH_WR</th>
+                    <th className="text-center p-3 font-semibold bg-yellow-500/20">4H_TDI</th>
+                    <th className="text-center p-3 font-semibold bg-yellow-500/20">D_STOCH_WR</th>
+                    <th className="text-center p-3 font-semibold bg-yellow-500/20">D_TDI</th>
+                    <th className="text-center p-3 font-semibold bg-yellow-500/20">W_STOCH_WR</th>
+                    <th className="text-center p-3 font-semibold bg-yellow-500/20">W_TDI</th>
+                    <th className="text-center p-3 font-semibold bg-yellow-500/20">M_STOC...</th>
+                    <th className="text-center p-3 font-semibold bg-yellow-500/20">M_TDI</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="border-b border-border/30">
+                    <td className="p-3 font-semibold text-cyan-400">AMD</td>
+                    <td className="p-3 text-green-400">142.01</td>
+                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
+                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
+                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
+                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
+                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
+                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
+                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
+                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
+                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
+                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
+                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
+                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
+                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
+                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
+                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
+                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
+                  </tr>
+                  <tr className="border-b border-border/30">
+                    <td className="p-3 font-semibold text-cyan-400">NVDA</td>
+                    <td className="p-3 text-green-400">138.25</td>
+                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
+                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
+                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
+                    <td className="p-3 text-center bg-green-800 text-white font-semibold">StrongBuy</td>
+                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
+                    <td className="p-3 text-center bg-green-800 text-white font-semibold">StrongBuy</td>
+                    <td className="p-3 text-center bg-red-500 text-white font-semibold">SHORT</td>
+                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
+                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
+                    <td className="p-3 text-center bg-green-800 text-white font-semibold">StrongBuy</td>
+                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
+                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
+                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
+                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
+                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
+                    <td className="p-3 text-center bg-green-800 text-white font-semibold">StrongBuy</td>
+                  </tr>
+                  <tr className="border-b border-border/30">
+                    <td className="p-3 font-semibold text-cyan-400">TSLA</td>
+                    <td className="p-3 text-green-400">394.25</td>
+                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
+                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
+                    <td className="p-3 text-center bg-fuchsia-500 text-white font-semibold">WeakShort</td>
+                    <td className="p-3 text-center bg-red-700 text-white font-semibold">StrongShort</td>
+                    <td className="p-3 text-center bg-red-500 text-white font-semibold">SHORT</td>
+                    <td className="p-3 text-center bg-red-700 text-white font-semibold">StrongShort</td>
+                    <td className="p-3 text-center bg-red-500 text-white font-semibold">SHORT</td>
+                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
+                    <td className="p-3 text-center bg-red-500 text-white font-semibold">SHORT</td>
+                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
+                    <td className="p-3 text-center bg-red-500 text-white font-semibold">SHORT</td>
+                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
+                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
+                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
+                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
+                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
+                  </tr>
+                  <tr className="border-b border-border/30">
+                    <td className="p-3 font-semibold text-cyan-400">MSFT</td>
+                    <td className="p-3 text-green-400">438.75</td>
+                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
+                    <td className="p-3 text-center bg-green-800 text-white font-semibold">StrongBuy</td>
+                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
+                    <td className="p-3 text-center bg-green-800 text-white font-semibold">StrongBuy</td>
+                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
+                    <td className="p-3 text-center bg-green-800 text-white font-semibold">StrongBuy</td>
+                    <td className="p-3 text-center bg-red-500 text-white font-semibold">SHORT</td>
+                    <td className="p-3 text-center bg-red-500 text-white font-semibold">SHORT</td>
+                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
+                    <td className="p-3 text-center bg-green-800 text-white font-semibold">StrongBuy</td>
+                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
+                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
+                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
+                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
+                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
+                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
+                  </tr>
+                  <tr className="border-b border-border/30">
+                    <td className="p-3 font-semibold text-cyan-400">AAPL</td>
+                    <td className="p-3 text-green-400">225.50</td>
+                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
+                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
+                    <td className="p-3 text-center bg-blue-500 text-white font-semibold">WeakBuy</td>
+                    <td className="p-3 text-center bg-red-700 text-white font-semibold">StrongShort</td>
+                    <td className="p-3 text-center bg-red-500 text-white font-semibold">SHORT</td>
+                    <td className="p-3 text-center bg-red-700 text-white font-semibold">StrongShort</td>
+                    <td className="p-3 text-center bg-red-500 text-white font-semibold">SHORT</td>
+                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
+                    <td className="p-3 text-center bg-red-500 text-white font-semibold">SHORT</td>
+                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
+                    <td className="p-3 text-center bg-red-500 text-white font-semibold">SHORT</td>
+                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
+                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
+                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
+                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
+                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
+                  </tr>
+                  <tr className="border-b border-border/30">
+                    <td className="p-3 font-semibold text-cyan-400">SPY</td>
+                    <td className="p-3 text-green-400">622.95</td>
+                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
+                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
+                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
+                    <td className="p-3 text-center bg-green-800 text-white font-semibold">StrongBuy</td>
+                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
+                    <td className="p-3 text-center bg-green-800 text-white font-semibold">StrongBuy</td>
+                    <td className="p-3 text-center bg-blue-500 text-white font-semibold">WeakBuy</td>
+                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
+                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
+                    <td className="p-3 text-center bg-green-800 text-white font-semibold">StrongBuy</td>
+                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
+                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
+                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
+                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
+                    <td className="p-3 text-center bg-green-500 text-white font-semibold">LONG</td>
+                    <td className="p-3 text-center bg-yellow-500 text-black font-semibold">HOLD</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Hero Section */}
       <section className="py-20 px-4">
         <div className="container mx-auto text-center">
@@ -143,191 +305,6 @@ const LandingPage = () => {
             <Button variant="outline" size="lg" className="px-8 py-3 text-lg">
               Watch Demo
             </Button>
-          </div>
-
-          {/* Live Tool Showcase */}
-          <div className="mb-20">
-            <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold mb-4">See Our Custom Column Tool in Action</h2>
-              <p className="text-lg text-muted-foreground">
-                Real momentum analysis across multiple timeframes for various instruments - all in one view
-              </p>
-            </div>
-            <div className="relative bg-card/50 backdrop-blur-sm rounded-lg border p-8 w-full mx-auto overflow-x-auto">
-              <div className="min-w-[1400px]">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b border-border/50">
-                      <th className="text-left p-3 font-semibold bg-muted/30">Symbol</th>
-                      <th className="text-left p-3 font-semibold bg-muted/30">Last</th>
-                      <th className="text-center p-3 font-semibold bg-yellow-500/20">3m_STOCH_WR</th>
-                      <th className="text-center p-3 font-semibold bg-yellow-500/20">3m_TDI</th>
-                      <th className="text-center p-3 font-semibold bg-yellow-500/20">5M_STOCH_WR</th>
-                      <th className="text-center p-3 font-semibold bg-yellow-500/20">5m_TDI</th>
-                      <th className="text-center p-3 font-semibold bg-yellow-500/20">15m_STOCH...</th>
-                      <th className="text-center p-3 font-semibold bg-yellow-500/20">15m_TDI</th>
-                      <th className="text-center p-3 font-semibold bg-red-500/20">1H_STOCH_WR</th>
-                      <th className="text-center p-3 font-semibold bg-yellow-500/20">1h_TDI</th>
-                      <th className="text-center p-3 font-semibold bg-yellow-500/20">4H_STOCH_WR</th>
-                      <th className="text-center p-3 font-semibold bg-yellow-500/20">4H_TDI</th>
-                      <th className="text-center p-3 font-semibold bg-yellow-500/20">D_STOCH_WR</th>
-                      <th className="text-center p-3 font-semibold bg-yellow-500/20">D_TDI</th>
-                      <th className="text-center p-3 font-semibold bg-yellow-500/20">W_STOCH_WR</th>
-                      <th className="text-center p-3 font-semibold bg-yellow-500/20">W_TDI</th>
-                      <th className="text-center p-3 font-semibold bg-yellow-500/20">M_STOC...</th>
-                      <th className="text-center p-3 font-semibold bg-yellow-500/20">M_TDI</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr className="border-b border-border/30">
-                      <td className="p-3 font-semibold text-cyan-400">[AMD25]</td>
-                      <td className="p-3 text-green-400">142.01</td>
-                      <td className="p-3 text-center bg-yellow-500/80 text-black font-semibold">LONG</td>
-                      <td className="p-3 text-center bg-yellow-500/80 text-black font-semibold">LONG</td>
-                      <td className="p-3 text-center bg-yellow-500/80 text-black font-semibold">LONG</td>
-                      <td className="p-3 text-center bg-yellow-500/80 text-black font-semibold">LONG</td>
-                      <td className="p-3 text-center bg-yellow-500/80 text-black font-semibold">LONG</td>
-                      <td className="p-3 text-center bg-yellow-500/80 text-black font-semibold">LONG</td>
-                      <td className="p-3 text-center bg-yellow-500/80 text-black font-semibold">LONG</td>
-                      <td className="p-3 text-center bg-yellow-500/80 text-black font-semibold">LONG</td>
-                      <td className="p-3 text-center bg-yellow-500/80 text-black font-semibold">LONG</td>
-                      <td className="p-3 text-center bg-yellow-500/80 text-black font-semibold">LONG</td>
-                      <td className="p-3 text-center bg-yellow-500/80 text-black font-semibold">LONG</td>
-                      <td className="p-3 text-center bg-yellow-500/80 text-black font-semibold">LONG</td>
-                      <td className="p-3 text-center bg-yellow-500/80 text-black font-semibold">LONG</td>
-                      <td className="p-3 text-center bg-yellow-500/80 text-black font-semibold">LONG</td>
-                      <td className="p-3 text-center bg-yellow-500/80 text-black font-semibold">LONG</td>
-                      <td className="p-3 text-center bg-yellow-500/80 text-black font-semibold">LONG</td>
-                    </tr>
-                    <tr className="border-b border-border/30">
-                      <td className="p-3 font-semibold text-cyan-400">VIX</td>
-                      <td className="p-3 text-green-400">17.85</td>
-                      <td className="p-3 text-center bg-yellow-500/80 text-black font-semibold">LONG</td>
-                      <td className="p-3 text-center bg-yellow-500/80 text-black font-semibold">LONG</td>
-                      <td className="p-3 text-center bg-yellow-500/80 text-black font-semibold">LONG</td>
-                      <td className="p-3 text-center bg-green-600/80 text-white font-semibold">StrongBuy</td>
-                      <td className="p-3 text-center bg-yellow-500/80 text-black font-semibold">LONG</td>
-                      <td className="p-3 text-center bg-green-600/80 text-white font-semibold">StrongBuy</td>
-                      <td className="p-3 text-center bg-red-600/80 text-white font-semibold">SHORT</td>
-                      <td className="p-3 text-center bg-yellow-500/80 text-black font-semibold">LONG</td>
-                      <td className="p-3 text-center bg-yellow-500/80 text-black font-semibold">LONG</td>
-                      <td className="p-3 text-center bg-green-600/80 text-white font-semibold">StrongBuy</td>
-                      <td className="p-3 text-center bg-yellow-500/80 text-black font-semibold">LONG</td>
-                      <td className="p-3 text-center bg-yellow-500/80 text-black font-semibold">LONG</td>
-                      <td className="p-3 text-center bg-green-600/80 text-white font-semibold">LONG</td>
-                      <td className="p-3 text-center bg-yellow-500/80 text-black font-semibold">LONG</td>
-                      <td className="p-3 text-center bg-yellow-500/80 text-black font-semibold">LONG</td>
-                      <td className="p-3 text-center bg-green-600/80 text-white font-semibold">Strong...</td>
-                    </tr>
-                    <tr className="border-b border-border/30">
-                      <td className="p-3 font-semibold text-cyan-400">[UPRO25]</td>
-                      <td className="p-3 text-green-400">2233.9</td>
-                      <td className="p-3 text-center bg-cyan-500/80 text-white font-semibold">HOLD</td>
-                      <td className="p-3 text-center bg-cyan-500/80 text-white font-semibold">HOLD</td>
-                      <td className="p-3 text-center bg-blue-600/80 text-white font-semibold">SHORT</td>
-                      <td className="p-3 text-center bg-red-600/80 text-white font-semibold">StrongSell</td>
-                      <td className="p-3 text-center bg-red-600/80 text-white font-semibold">SHORT</td>
-                      <td className="p-3 text-center bg-red-600/80 text-white font-semibold">StrongSell</td>
-                      <td className="p-3 text-center bg-red-600/80 text-white font-semibold">SHORT</td>
-                      <td className="p-3 text-center bg-cyan-500/80 text-white font-semibold">HOLD</td>
-                      <td className="p-3 text-center bg-red-600/80 text-white font-semibold">SHORT</td>
-                      <td className="p-3 text-center bg-cyan-500/80 text-white font-semibold">HOLD</td>
-                      <td className="p-3 text-center bg-red-600/80 text-white font-semibold">SHORT</td>
-                      <td className="p-3 text-center bg-cyan-500/80 text-white font-semibold">HOLD</td>
-                      <td className="p-3 text-center bg-cyan-500/80 text-white font-semibold">HOLD</td>
-                      <td className="p-3 text-center bg-cyan-500/80 text-white font-semibold">HOLD</td>
-                      <td className="p-3 text-center bg-cyan-500/80 text-white font-semibold">HOLD</td>
-                      <td className="p-3 text-center bg-cyan-500/80 text-white font-semibold">HOLD</td>
-                    </tr>
-                    <tr className="border-b border-border/30">
-                      <td className="p-3 font-semibold text-cyan-400">[GC25]</td>
-                      <td className="p-3 text-green-400">3435.0</td>
-                      <td className="p-3 text-center bg-yellow-500/80 text-black font-semibold">LONG</td>
-                      <td className="p-3 text-center bg-green-600/80 text-white font-semibold">LONG</td>
-                      <td className="p-3 text-center bg-yellow-500/80 text-black font-semibold">LONG</td>
-                      <td className="p-3 text-center bg-green-600/80 text-white font-semibold">StrongBuy</td>
-                      <td className="p-3 text-center bg-yellow-500/80 text-black font-semibold">LONG</td>
-                      <td className="p-3 text-center bg-green-600/80 text-white font-semibold">StrongBuy</td>
-                      <td className="p-3 text-center bg-red-600/80 text-white font-semibold">SHORT</td>
-                      <td className="p-3 text-center bg-red-600/80 text-white font-semibold">SHORT</td>
-                      <td className="p-3 text-center bg-yellow-500/80 text-black font-semibold">LONG</td>
-                      <td className="p-3 text-center bg-green-600/80 text-white font-semibold">StrongBuy</td>
-                      <td className="p-3 text-center bg-yellow-500/80 text-black font-semibold">LONG</td>
-                      <td className="p-3 text-center bg-cyan-500/80 text-white font-semibold">HOLD</td>
-                      <td className="p-3 text-center bg-yellow-500/80 text-black font-semibold">LONG</td>
-                      <td className="p-3 text-center bg-cyan-500/80 text-white font-semibold">HOLD</td>
-                      <td className="p-3 text-center bg-yellow-500/80 text-black font-semibold">LONG</td>
-                      <td className="p-3 text-center bg-cyan-500/80 text-white font-semibold">HOLD</td>
-                    </tr>
-                    <tr className="border-b border-border/30">
-                      <td className="p-3 font-semibold text-cyan-400">[NQ25]</td>
-                      <td className="p-3 text-green-400">23092.00</td>
-                      <td className="p-3 text-center bg-cyan-500/80 text-white font-semibold">HOLD</td>
-                      <td className="p-3 text-center bg-cyan-500/80 text-white font-semibold">HOLD</td>
-                      <td className="p-3 text-center bg-blue-600/80 text-white font-semibold">SHORT</td>
-                      <td className="p-3 text-center bg-red-600/80 text-white font-semibold">StrongSell</td>
-                      <td className="p-3 text-center bg-red-600/80 text-white font-semibold">SHORT</td>
-                      <td className="p-3 text-center bg-red-600/80 text-white font-semibold">StrongSell</td>
-                      <td className="p-3 text-center bg-red-600/80 text-white font-semibold">SHORT</td>
-                      <td className="p-3 text-center bg-cyan-500/80 text-white font-semibold">HOLD</td>
-                      <td className="p-3 text-center bg-red-600/80 text-white font-semibold">SHORT</td>
-                      <td className="p-3 text-center bg-cyan-500/80 text-white font-semibold">HOLD</td>
-                      <td className="p-3 text-center bg-red-600/80 text-white font-semibold">SHORT</td>
-                      <td className="p-3 text-center bg-cyan-500/80 text-white font-semibold">HOLD</td>
-                      <td className="p-3 text-center bg-cyan-500/80 text-white font-semibold">HOLD</td>
-                      <td className="p-3 text-center bg-cyan-500/80 text-white font-semibold">HOLD</td>
-                      <td className="p-3 text-center bg-cyan-500/80 text-white font-semibold">HOLD</td>
-                      <td className="p-3 text-center bg-cyan-500/80 text-white font-semibold">HOLD</td>
-                    </tr>
-                    <tr className="border-b border-border/30">
-                      <td className="p-3 font-semibold text-cyan-400">[ES25]</td>
-                      <td className="p-3 text-green-400">6324.50</td>
-                      <td className="p-3 text-center bg-yellow-500/80 text-black font-semibold">LONG</td>
-                      <td className="p-3 text-center bg-yellow-500/80 text-black font-semibold">LONG</td>
-                      <td className="p-3 text-center bg-yellow-500/80 text-black font-semibold">LONG</td>
-                      <td className="p-3 text-center bg-yellow-500/80 text-black font-semibold">LONG</td>
-                      <td className="p-3 text-center bg-yellow-500/80 text-black font-semibold">LONG</td>
-                      <td className="p-3 text-center bg-yellow-500/80 text-black font-semibold">LONG</td>
-                      <td className="p-3 text-center bg-red-600/80 text-white font-semibold">SHORT</td>
-                      <td className="p-3 text-center bg-red-600/80 text-white font-semibold">SHORT</td>
-                      <td className="p-3 text-center bg-yellow-500/80 text-black font-semibold">LONG</td>
-                      <td className="p-3 text-center bg-yellow-500/80 text-black font-semibold">LONG</td>
-                      <td className="p-3 text-center bg-red-600/80 text-white font-semibold">SHORT</td>
-                      <td className="p-3 text-center bg-cyan-500/80 text-white font-semibold">HOLD</td>
-                      <td className="p-3 text-center bg-yellow-500/80 text-black font-semibold">LONG</td>
-                      <td className="p-3 text-center bg-cyan-500/80 text-white font-semibold">HOLD</td>
-                      <td className="p-3 text-center bg-yellow-500/80 text-black font-semibold">LONG</td>
-                      <td className="p-3 text-center bg-cyan-500/80 text-white font-semibold">HOLD</td>
-                    </tr>
-                    <tr>
-                      <td className="p-3 font-semibold text-cyan-400">[CL25]</td>
-                      <td className="p-3 text-green-400">65.17</td>
-                      <td className="p-3 text-center bg-yellow-500/80 text-black font-semibold">LONG</td>
-                      <td className="p-3 text-center bg-yellow-500/80 text-black font-semibold">LONG</td>
-                      <td className="p-3 text-center bg-yellow-500/80 text-black font-semibold">LONG</td>
-                      <td className="p-3 text-center bg-blue-600/80 text-white font-semibold">WeakBuy</td>
-                      <td className="p-3 text-center bg-yellow-500/80 text-black font-semibold">LONG</td>
-                      <td className="p-3 text-center bg-yellow-500/80 text-black font-semibold">LONG</td>
-                      <td className="p-3 text-center bg-red-600/80 text-white font-semibold">SHORT</td>
-                      <td className="p-3 text-center bg-yellow-500/80 text-black font-semibold">LONG</td>
-                      <td className="p-3 text-center bg-red-600/80 text-white font-semibold">SHORT</td>
-                      <td className="p-3 text-center bg-red-600/80 text-white font-semibold">StrongSell</td>
-                      <td className="p-3 text-center bg-red-600/80 text-white font-semibold">SHORT</td>
-                      <td className="p-3 text-center bg-red-600/80 text-white font-semibold">StrongSell</td>
-                      <td className="p-3 text-center bg-yellow-500/80 text-black font-semibold">LONG</td>
-                      <td className="p-3 text-center bg-yellow-500/80 text-black font-semibold">LONG</td>
-                      <td className="p-3 text-center bg-yellow-500/80 text-black font-semibold">LONG</td>
-                      <td className="p-3 text-center bg-yellow-500/80 text-black font-semibold">LONG</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-              <div className="mt-6 text-center">
-                <p className="text-base text-muted-foreground">
-                  Live momentum signals across 3m, 5m, 15m, 1H, 4H, Daily, Weekly, and Monthly timeframes - All instruments, all timeframes, one view
-                </p>
-              </div>
-            </div>
           </div>
 
           {/* Key Stats */}

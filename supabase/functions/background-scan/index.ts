@@ -158,14 +158,16 @@ async function performFuturesScan() {
   const activeFutures = getActiveFutures();
   const results: any[] = [];
   
-  // Clear old scan results (keep only last 24 hours)
+  // Clear ALL old scan results first to ensure clean state
   const { error: deleteError } = await supabase
     .from('momentum_scans')
     .delete()
-    .lt('scan_timestamp', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
+    .neq('id', '00000000-0000-0000-0000-000000000000'); // Delete all records
   
   if (deleteError) {
     console.error('Error clearing old scan results:', deleteError);
+  } else {
+    console.log('✅ Cleared all old scan results for fresh data');
   }
 
   for (const futuresContract of activeFutures) {

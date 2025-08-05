@@ -19,8 +19,10 @@ export type Database = {
           catalyst: string | null
           change_percent: number
           company_name: string | null
+          contract_month: string | null
           created_at: string
           estimated_float: number | null
+          expiration_date: string | null
           id: string
           momo1_signals: Json
           momo2_signals: Json
@@ -36,8 +38,10 @@ export type Database = {
           catalyst?: string | null
           change_percent: number
           company_name?: string | null
+          contract_month?: string | null
           created_at?: string
           estimated_float?: number | null
+          expiration_date?: string | null
           id?: string
           momo1_signals: Json
           momo2_signals: Json
@@ -53,8 +57,10 @@ export type Database = {
           catalyst?: string | null
           change_percent?: number
           company_name?: string | null
+          contract_month?: string | null
           created_at?: string
           estimated_float?: number | null
+          expiration_date?: string | null
           id?: string
           momo1_signals?: Json
           momo2_signals?: Json

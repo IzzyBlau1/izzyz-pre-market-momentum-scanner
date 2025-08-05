@@ -1,20 +1,12 @@
-interface StockData {
+interface FuturesData {
   symbol: string;
   price: number;
   change: number;
   changePercent: number;
   volume: number;
-  averageVolume50Day: number;
-  float: number;
   previousClose: number;
-}
-
-interface ScanCriteria {
-  minPrice: number;
-  maxPrice: number;
-  minDailyGainPercent: number;
-  volumeSpikeMultiplier: number;
-  maxFloat: number;
+  expiration: string;
+  contractMonth: string;
 }
 
 interface NewsItem {
@@ -24,7 +16,7 @@ interface NewsItem {
   datetime: number;
 }
 
-class StockScannerService {
+class FuturesScannerService {
   private apiKey: string = '';
   private baseUrl = 'https://finnhub.io/api/v1';
 
@@ -32,202 +24,71 @@ class StockScannerService {
     this.apiKey = apiKey;
   }
 
-  // Check if current time is within pre-market hours (8 AM - 9:30 AM EST)
-  private isPreMarketHours(): boolean {
-    const now = new Date();
-    const estTime = new Date(now.toLocaleString("en-US", {timeZone: "America/New_York"}));
-    const hours = estTime.getHours();
-    const minutes = estTime.getMinutes();
-    
-    return (hours === 8) || (hours === 9 && minutes < 30);
+  // Get active futures contracts
+  getActiveFutures(): Array<{symbol: string, name: string, expiration: string, contractMonth: string}> {
+    // March 2025 futures contracts
+    return [
+      { symbol: 'NQ03-25', name: 'E-mini NASDAQ 100', expiration: '2025-03-21', contractMonth: 'MAR25' },
+      { symbol: 'ES03-25', name: 'E-mini S&P 500', expiration: '2025-03-21', contractMonth: 'MAR25' },
+      { symbol: 'YM03-25', name: 'E-mini Dow Jones', expiration: '2025-03-21', contractMonth: 'MAR25' },
+      { symbol: 'RTY03-25', name: 'E-mini Russell 2000', expiration: '2025-03-21', contractMonth: 'MAR25' },
+      { symbol: 'VX03-25', name: 'VIX Futures', expiration: '2025-03-21', contractMonth: 'MAR25' }
+    ];
   }
 
-  // Fetch stock quote data
-  private async fetchStockQuote(symbol: string): Promise<StockData | null> {
-    try {
-      const response = await fetch(
-        `${this.baseUrl}/quote?symbol=${symbol}&token=${this.apiKey}`
-      );
-      
-      if (!response.ok) return null;
-      
-      const data = await response.json();
-      
-      // Calculate volume spike (current vs 50-day average)
-      const volumeSpike = data.volume / (data.averageVolume || 1);
-      
-      return {
-        symbol,
-        price: data.c, // current price
-        change: data.d, // change
-        changePercent: data.dp, // change percent
-        volume: data.volume || 0,
-        averageVolume50Day: data.averageVolume || 0,
-        float: 0, // Will need separate API call for float data
-        previousClose: data.pc // previous close
-      };
-    } catch (error) {
-      console.error(`Error fetching quote for ${symbol}:`, error);
-      return null;
-    }
-  }
+  // Simulate futures data with momentum signals
+  async scanFutures(): Promise<any[]> {
+    const activeFutures = this.getActiveFutures();
+    const results = [];
 
-  // Fetch company profile for float data
-  private async fetchCompanyProfile(symbol: string): Promise<number> {
-    try {
-      const response = await fetch(
-        `${this.baseUrl}/stock/profile2?symbol=${symbol}&token=${this.apiKey}`
-      );
-      
-      if (!response.ok) return 0;
-      
-      const data = await response.json();
-      return data.shareOutstanding || 0; // Outstanding shares as proxy for float
-    } catch (error) {
-      console.error(`Error fetching profile for ${symbol}:`, error);
-      return 0;
-    }
-  }
-
-  // Fetch recent news for catalyst detection
-  private async fetchRecentNews(symbol: string): Promise<NewsItem[]> {
-    try {
-      const today = new Date();
-      const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000);
-      
-      const response = await fetch(
-        `${this.baseUrl}/company-news?symbol=${symbol}&from=${yesterday.toISOString().split('T')[0]}&to=${today.toISOString().split('T')[0]}&token=${this.apiKey}`
-      );
-      
-      if (!response.ok) return [];
-      
-      const news = await response.json();
-      return news.slice(0, 3).map((item: any) => ({
-        headline: item.headline,
-        summary: item.summary,
-        url: item.url,
-        datetime: item.datetime
-      }));
-    } catch (error) {
-      console.error(`Error fetching news for ${symbol}:`, error);
-      return [];
-    }
-  }
-
-  // Check if stock meets all criteria
-  private async meetsCriteria(symbol: string, criteria: ScanCriteria): Promise<boolean> {
-    const quote = await this.fetchStockQuote(symbol);
-    if (!quote) return false;
-
-    // 1. Price between $2 and $20
-    if (quote.price < criteria.minPrice || quote.price > criteria.maxPrice) {
-      return false;
-    }
-
-    // 2. Up at least 10% on the day
-    if (quote.changePercent < criteria.minDailyGainPercent) {
-      return false;
-    }
-
-    // 3. Volume spike 5X average
-    const volumeSpike = quote.volume / (quote.averageVolume50Day || 1);
-    if (volumeSpike < criteria.volumeSpikeMultiplier) {
-      return false;
-    }
-
-    // 4. Float less than 10M shares
-    const float = await this.fetchCompanyProfile(symbol);
-    if (float > criteria.maxFloat) {
-      return false;
-    }
-
-    // 5. Has recent news (catalyst)
-    const news = await this.fetchRecentNews(symbol);
-    if (news.length === 0) {
-      return false;
-    }
-
-    return true;
-  }
-
-  // Get list of active stocks (top gainers as starting point)
-  private async getActiveStocks(): Promise<string[]> {
-    try {
-      // Get top gainers as our universe of stocks to scan
-      const response = await fetch(
-        `${this.baseUrl}/stock/market-status?exchange=US&token=${this.apiKey}`
-      );
-      
-      // For now, return a curated list of commonly active stocks
-      // In production, this would come from a market screener API
-      return [
-        'AAPL', 'TSLA', 'NVDA', 'AMD', 'MSFT', 'GOOGL', 'META', 'AMZN',
-        'NFLX', 'CRM', 'UBER', 'LYFT', 'SNAP', 'TWTR', 'SQ', 'PYPL',
-        'ROKU', 'ZM', 'PTON', 'MRNA', 'PFE', 'JNJ', 'KO', 'PEP'
-      ];
-    } catch (error) {
-      console.error('Error fetching active stocks:', error);
-      return [];
-    }
-  }
-
-  // Main scan function
-  async scanStocks(): Promise<any[]> {
-    if (!this.apiKey) {
-      throw new Error('API key required for stock scanning');
-    }
-
-    if (!this.isPreMarketHours()) {
-      console.warn('Not in pre-market hours (8 AM - 9:30 AM EST)');
-    }
-
-    const criteria: ScanCriteria = {
-      minPrice: 2,
-      maxPrice: 20,
-      minDailyGainPercent: 10,
-      volumeSpikeMultiplier: 5,
-      maxFloat: 10_000_000
-    };
-
-    const stockUniverse = await this.getActiveStocks();
-    const qualifyingStocks = [];
-
-    for (const symbol of stockUniverse) {
+    for (const futuresContract of activeFutures) {
       try {
-        if (await this.meetsCriteria(symbol, criteria)) {
-          const quote = await this.fetchStockQuote(symbol);
-          const news = await this.fetchRecentNews(symbol);
-          const float = await this.fetchCompanyProfile(symbol);
-          
-          if (quote) {
-            qualifyingStocks.push({
-              symbol,
-              price: quote.price,
-              change: quote.change,
-              changePercent: quote.changePercent,
-              volume: quote.volume,
-              volumeSpike: quote.volume / (quote.averageVolume50Day || 1),
-              float,
-              catalyst: news[0]?.headline || 'Recent news activity',
-              momentum: {
-                '1m': { momo1: 0, momo2: 0 }, // Will be populated by momentum scripts
-                '5m': { momo1: 0, momo2: 0 },
-                '15m': { momo1: 0, momo2: 0 },
-                '1h': { momo1: 0, momo2: 0 },
-                '4h': { momo1: 0, momo2: 0 },
-                'daily': { momo1: 0, momo2: 0 }
-              }
-            });
-          }
-        }
+        // Simulate momentum data for each timeframe
+        const momo1Signals = {
+          '1m': ['bullish', 'bearish', 'neutral'][Math.floor(Math.random() * 3)],
+          '5m': ['bullish', 'bearish', 'neutral'][Math.floor(Math.random() * 3)],
+          '15m': ['bullish', 'bearish', 'neutral'][Math.floor(Math.random() * 3)]
+        };
+        
+        const momo2Signals = {
+          '30m': ['bullish', 'bearish', 'neutral'][Math.floor(Math.random() * 3)],
+          '1h': ['bullish', 'bearish', 'neutral'][Math.floor(Math.random() * 3)],
+          '4h': ['bullish', 'bearish', 'neutral'][Math.floor(Math.random() * 3)],
+          '1d': ['bullish', 'bearish', 'neutral'][Math.floor(Math.random() * 3)]
+        };
+
+        // Simulate price data based on instrument
+        let basePrice = 5000;
+        if (futuresContract.symbol.startsWith('NQ')) basePrice = 21000;
+        else if (futuresContract.symbol.startsWith('ES')) basePrice = 5800;
+        else if (futuresContract.symbol.startsWith('YM')) basePrice = 43500;
+        else if (futuresContract.symbol.startsWith('RTY')) basePrice = 2350;
+        else if (futuresContract.symbol.startsWith('VX')) basePrice = 18.5;
+
+        const price = basePrice + (Math.random() - 0.5) * basePrice * 0.02; // ±1% variation
+        const previousClose = price - (Math.random() - 0.5) * price * 0.01; // ±0.5% from current
+
+        results.push({
+          symbol: futuresContract.symbol,
+          company_name: futuresContract.name,
+          price: Number(price.toFixed(2)),
+          previous_close: Number(previousClose.toFixed(2)),
+          change_percent: Number((((price - previousClose) / previousClose) * 100).toFixed(2)),
+          volume: Math.floor(Math.random() * 200000 + 50000),
+          volume_spike: Number((Math.random() * 2 + 0.5).toFixed(1)),
+          momo1_signals: momo1Signals,
+          momo2_signals: momo2Signals,
+          expiration_date: futuresContract.expiration,
+          contract_month: futuresContract.contractMonth
+        });
       } catch (error) {
-        console.error(`Error processing ${symbol}:`, error);
+        console.error(`Error scanning ${futuresContract.symbol}:`, error);
       }
     }
 
-    return qualifyingStocks;
+    return results;
   }
 }
 
-export { StockScannerService };
-export type { StockData, ScanCriteria, NewsItem };
+export { FuturesScannerService };
+export type { FuturesData, NewsItem };

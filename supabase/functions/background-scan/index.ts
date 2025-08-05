@@ -225,17 +225,17 @@ async function performFuturesScan() {
       if (!quote || quote.error || !quote.c || quote.c === 0) {
         console.log(`🎭 Using mock data for ${futuresContract.symbol}`);
         
-        // Generate realistic futures prices based on contract type
+        // Generate realistic futures prices based on CURRENT market prices (Jan 2025)
         let basePrice = 5000;
-        if (futuresContract.symbol.startsWith('ES')) basePrice = 5900;      // S&P 500 E-mini ~5900
-        else if (futuresContract.symbol.startsWith('NQ')) basePrice = 20500; // NASDAQ 100 E-mini ~20500  
-        else if (futuresContract.symbol.startsWith('YM')) basePrice = 43000;  // Dow Jones E-mini ~43000
-        else if (futuresContract.symbol.startsWith('RTY')) basePrice = 2200;  // Russell 2000 E-mini ~2200
-        else if (futuresContract.symbol.startsWith('VX')) basePrice = 18;     // VIX futures ~18-25
+        if (futuresContract.symbol.startsWith('ES')) basePrice = 6344;      // S&P 500 E-mini current price
+        else if (futuresContract.symbol.startsWith('NQ')) basePrice = 23210; // NASDAQ 100 E-mini current price  
+        else if (futuresContract.symbol.startsWith('YM')) basePrice = 42500;  // Dow Jones E-mini estimated
+        else if (futuresContract.symbol.startsWith('RTY')) basePrice = 2350;  // Russell 2000 E-mini estimated
+        else if (futuresContract.symbol.startsWith('VX')) basePrice = 22;     // VIX futures estimated
         
-        const variation = (Math.random() - 0.5) * 0.05; // ±5% variation
+        const variation = (Math.random() - 0.5) * 0.02; // ±2% variation for realism
         const currentPrice = basePrice * (1 + variation);
-        const previousClose = basePrice * (1 + (Math.random() - 0.5) * 0.03); // ±3% for previous close
+        const previousClose = basePrice * (1 + (Math.random() - 0.5) * 0.015); // ±1.5% for previous close
         
         quote = {
           c: currentPrice,

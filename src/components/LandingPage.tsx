@@ -153,15 +153,15 @@ const LandingPage = () => {
                 Real momentum analysis across multiple timeframes for various instruments - all in one view
               </p>
             </div>
-            <div className="relative bg-card/50 backdrop-blur-sm rounded-lg border p-6 max-w-7xl mx-auto">
+            <div className="relative bg-card/50 backdrop-blur-sm rounded-lg border p-8 w-full mx-auto">
               <img 
                 src="/lovable-uploads/173146ca-2958-49cd-aa2c-782a49737808.png" 
                 alt="Custom Column Momentum Tool showing real-time analysis across multiple timeframes for various trading instruments including stocks, futures, and indices with color-coded LONG/SHORT signals"
-                className="w-full h-auto rounded-md shadow-lg min-h-[200px] object-contain"
-                style={{ imageRendering: 'crisp-edges' }}
+                className="w-full h-auto rounded-md shadow-lg min-h-[400px] object-contain"
+                style={{ imageRendering: 'crisp-edges', maxWidth: 'none' }}
               />
-              <div className="mt-4 text-center">
-                <p className="text-sm text-muted-foreground">
+              <div className="mt-6 text-center">
+                <p className="text-base text-muted-foreground">
                   Live momentum signals across 1H, 4H, Daily, and Weekly timeframes - No more switching between multiple charts
                 </p>
               </div>

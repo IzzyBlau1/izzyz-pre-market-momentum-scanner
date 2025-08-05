@@ -145,6 +145,28 @@ const LandingPage = () => {
             </Button>
           </div>
 
+          {/* Live Tool Showcase */}
+          <div className="mb-20">
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold mb-4">See Our Custom Column Tool in Action</h2>
+              <p className="text-lg text-muted-foreground">
+                Real momentum analysis across multiple timeframes for various instruments - all in one view
+              </p>
+            </div>
+            <div className="relative bg-card/50 backdrop-blur-sm rounded-lg border p-4 max-w-6xl mx-auto">
+              <img 
+                src="/lovable-uploads/09b04f57-c94d-4b50-9e5f-360b6b829c74.png" 
+                alt="Custom Column Momentum Tool showing real-time analysis across multiple timeframes for various trading instruments including stocks, futures, and indices with color-coded LONG/SHORT signals"
+                className="w-full h-auto rounded-md shadow-lg"
+              />
+              <div className="mt-4 text-center">
+                <p className="text-sm text-muted-foreground">
+                  Live momentum signals across 1H, 4H, Daily, and Weekly timeframes - No more switching between multiple charts
+                </p>
+              </div>
+            </div>
+          </div>
+
           {/* Key Stats */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
             <div className="text-center">

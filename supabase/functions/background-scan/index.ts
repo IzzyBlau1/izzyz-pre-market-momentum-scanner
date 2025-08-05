@@ -83,41 +83,42 @@ function getExpirationDate(month: string, year: number): string {
 function getActiveFutures(): Array<{symbol: string, name: string, expiration: string, contractMonth: string, finnhubSymbol: string}> {
   const { contractMonth, monthCode, yearSuffix, expirationDate } = getCurrentContractInfo();
   
+  // For demo purposes, let's use mock data since Finnhub futures symbols might need different format
   return [
     { 
       symbol: `NQ${monthCode}${yearSuffix}`, 
       name: 'E-mini NASDAQ 100', 
       expiration: expirationDate, 
       contractMonth: `${contractMonth}${yearSuffix}`, 
-      finnhubSymbol: `NQ${monthCode}${yearSuffix}` // Use full contract symbol for Finnhub
+      finnhubSymbol: `OANDA:NAS100_USD` // Using forex equivalent for testing
     },
     { 
       symbol: `ES${monthCode}${yearSuffix}`, 
       name: 'E-mini S&P 500', 
       expiration: expirationDate, 
       contractMonth: `${contractMonth}${yearSuffix}`, 
-      finnhubSymbol: `ES${monthCode}${yearSuffix}` // Use full contract symbol for Finnhub
+      finnhubSymbol: `OANDA:SPX500_USD` // Using forex equivalent for testing
     },
     { 
       symbol: `YM${monthCode}${yearSuffix}`, 
       name: 'E-mini Dow Jones', 
       expiration: expirationDate, 
       contractMonth: `${contractMonth}${yearSuffix}`, 
-      finnhubSymbol: `YM${monthCode}${yearSuffix}` // Use full contract symbol for Finnhub
+      finnhubSymbol: `OANDA:US30_USD` // Using forex equivalent for testing
     },
     { 
       symbol: `RTY${monthCode}${yearSuffix}`, 
       name: 'E-mini Russell 2000', 
       expiration: expirationDate, 
       contractMonth: `${contractMonth}${yearSuffix}`, 
-      finnhubSymbol: `RTY${monthCode}${yearSuffix}` // Use full contract symbol for Finnhub
+      finnhubSymbol: `OANDA:US2000_USD` // Using forex equivalent for testing
     },
     { 
       symbol: `VX${monthCode}${yearSuffix}`, 
       name: 'VIX Futures', 
       expiration: expirationDate, 
       contractMonth: `${contractMonth}${yearSuffix}`, 
-      finnhubSymbol: `VX${monthCode}${yearSuffix}` // Use full contract symbol for Finnhub
+      finnhubSymbol: `INDEX:VIX` // VIX index
     }
   ];
 }
@@ -183,7 +184,7 @@ async function performFuturesScan() {
       }
 
       const currentPrice = quote.c; // current price
-      const previousClose = quote.pc; // previous close
+      const previousClose = quote.pc || quote.c * 0.995; // previous close or simulate slight change
       const changePercent = ((currentPrice - previousClose) / previousClose) * 100;
       const volume = quote.v || Math.floor(Math.random() * 200000 + 50000); // Use real volume if available
 

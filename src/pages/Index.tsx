@@ -198,26 +198,27 @@ const Index = () => {
         {scanResults.length > 0 && (
           <div className="space-y-4">
             <h2 className="text-2xl font-semibold text-foreground mb-4">
-              Live Scan Results ({scanResults.length} opportunities)
+              Index Futures ({scanResults.length} instruments)
             </h2>
             
             <div className="overflow-x-auto">
               <table className="w-full border-collapse border border-border bg-card rounded-lg">
                 <thead>
                   <tr className="bg-muted">
-                    <th className="border border-border p-3 text-left font-semibold">Ticker</th>
-                    <th className="border border-border p-3 text-center font-semibold">Last $</th>
-                    <th className="border border-border p-3 text-center font-semibold">% Change</th>
-                    <th className="border border-border p-3 text-center font-semibold">V-Spike</th>
-                    <th className="border border-border p-3 text-center font-semibold">Float</th>
-                    <th className="border border-border p-3 text-center font-semibold">Catalyst</th>
+                    <th className="border border-border p-3 text-left font-semibold">Symbol</th>
+                    <th className="border border-border p-3 text-center font-semibold">Contract</th>
+                    <th className="border border-border p-3 text-center font-semibold">Price</th>
+                    <th className="border border-border p-3 text-center font-semibold">Change %</th>
+                    <th className="border border-border p-3 text-center font-semibold">Volume</th>
+                    <th className="border border-border p-3 text-center font-semibold">Expiration</th>
                     <th className="border border-border p-3 text-center font-semibold">Momentum</th>
-                    <th className="border border-border p-3 text-center font-semibold text-xs">1 MIN</th>
-                    <th className="border border-border p-3 text-center font-semibold text-xs">5 MIN</th>
-                    <th className="border border-border p-3 text-center font-semibold text-xs">15 MIN</th>
-                    <th className="border border-border p-3 text-center font-semibold text-xs">1H</th>
-                    <th className="border border-border p-3 text-center font-semibold text-xs">4H</th>
-                    <th className="border border-border p-3 text-center font-semibold text-xs">Day</th>
+                    <th className="border border-border p-3 text-center font-semibold text-xs">1m</th>
+                    <th className="border border-border p-3 text-center font-semibold text-xs">5m</th>
+                    <th className="border border-border p-3 text-center font-semibold text-xs">15m</th>
+                    <th className="border border-border p-3 text-center font-semibold text-xs">30m</th>
+                    <th className="border border-border p-3 text-center font-semibold text-xs">1h</th>
+                    <th className="border border-border p-3 text-center font-semibold text-xs">4h</th>
+                    <th className="border border-border p-3 text-center font-semibold text-xs">1d</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -227,11 +228,9 @@ const Index = () => {
                       <tr className={stockIndex % 2 === 0 ? "bg-background" : "bg-muted/30"}>
                         <td className="border border-border p-3 font-semibold" rowSpan={2}>
                           {stock.symbol}
-                          {stock.company_name && (
-                            <div className="text-xs text-muted-foreground mt-1">
-                              {stock.company_name.substring(0, 20)}...
-                            </div>
-                          )}
+                        </td>
+                        <td className="border border-border p-3 text-center" rowSpan={2}>
+                          {stock.company_name || 'N/A'}
                         </td>
                         <td className="border border-border p-3 text-center" rowSpan={2}>
                           ${stock.price.toFixed(2)}
@@ -242,20 +241,15 @@ const Index = () => {
                           {stock.change_percent >= 0 ? '+' : ''}{stock.change_percent.toFixed(1)}%
                         </td>
                         <td className="border border-border p-3 text-center" rowSpan={2}>
-                          {stock.volume_spike.toFixed(1)}x
+                          {stock.volume.toLocaleString()}
                         </td>
                         <td className="border border-border p-3 text-center" rowSpan={2}>
-                          {formatFloat(stock.estimated_float)}
-                        </td>
-                        <td className="border border-border p-3 text-center text-sm" rowSpan={2}>
-                          <div className="max-w-[200px] truncate">
-                            {stock.catalyst}
-                          </div>
+                          Mar 2025
                         </td>
                         <td className="border border-border p-3 text-center text-sm font-semibold">
                           MoMo1
                         </td>
-                        {(["1m", "5m", "15m", "1h", "4h", "daily"] as const).map((timeframe) => (
+                        {(["1m", "5m", "15m", "30m", "1h", "4h", "1d"] as const).map((timeframe) => (
                           <td key={`momo1-${timeframe}`} className="border border-border p-3 text-center">
                             <div className={`w-4 h-4 mx-auto rounded-full ${getMomentumColor(stock.momo1_signals[timeframe])}`}></div>
                           </td>
@@ -266,7 +260,7 @@ const Index = () => {
                         <td className="border border-border p-3 text-center text-sm font-semibold">
                           MoMo2
                         </td>
-                        {(["1m", "5m", "15m", "1h", "4h", "daily"] as const).map((timeframe) => (
+                        {(["1m", "5m", "15m", "30m", "1h", "4h", "1d"] as const).map((timeframe) => (
                           <td key={`momo2-${timeframe}`} className="border border-border p-3 text-center">
                             <div className={`w-4 h-4 mx-auto rounded-full ${getMomentumColor(stock.momo2_signals[timeframe])}`}></div>
                           </td>

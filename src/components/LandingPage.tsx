@@ -153,11 +153,12 @@ const LandingPage = () => {
                 Real momentum analysis across multiple timeframes for various instruments - all in one view
               </p>
             </div>
-            <div className="relative bg-card/50 backdrop-blur-sm rounded-lg border p-4 max-w-6xl mx-auto">
+            <div className="relative bg-card/50 backdrop-blur-sm rounded-lg border p-6 max-w-7xl mx-auto">
               <img 
-                src="/lovable-uploads/09b04f57-c94d-4b50-9e5f-360b6b829c74.png" 
+                src="/lovable-uploads/173146ca-2958-49cd-aa2c-782a49737808.png" 
                 alt="Custom Column Momentum Tool showing real-time analysis across multiple timeframes for various trading instruments including stocks, futures, and indices with color-coded LONG/SHORT signals"
-                className="w-full h-auto rounded-md shadow-lg"
+                className="w-full h-auto rounded-md shadow-lg min-h-[200px] object-contain"
+                style={{ imageRendering: 'crisp-edges' }}
               />
               <div className="mt-4 text-center">
                 <p className="text-sm text-muted-foreground">

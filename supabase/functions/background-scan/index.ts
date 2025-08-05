@@ -89,35 +89,35 @@ function getActiveFutures(): Array<{symbol: string, name: string, expiration: st
       name: 'E-mini NASDAQ 100', 
       expiration: expirationDate, 
       contractMonth: `${contractMonth}${yearSuffix}`, 
-      finnhubSymbol: 'NQ' 
+      finnhubSymbol: `NQ${monthCode}${yearSuffix}` // Use full contract symbol for Finnhub
     },
     { 
       symbol: `ES${monthCode}${yearSuffix}`, 
       name: 'E-mini S&P 500', 
       expiration: expirationDate, 
       contractMonth: `${contractMonth}${yearSuffix}`, 
-      finnhubSymbol: 'ES' 
+      finnhubSymbol: `ES${monthCode}${yearSuffix}` // Use full contract symbol for Finnhub
     },
     { 
       symbol: `YM${monthCode}${yearSuffix}`, 
       name: 'E-mini Dow Jones', 
       expiration: expirationDate, 
       contractMonth: `${contractMonth}${yearSuffix}`, 
-      finnhubSymbol: 'YM' 
+      finnhubSymbol: `YM${monthCode}${yearSuffix}` // Use full contract symbol for Finnhub
     },
     { 
       symbol: `RTY${monthCode}${yearSuffix}`, 
       name: 'E-mini Russell 2000', 
       expiration: expirationDate, 
       contractMonth: `${contractMonth}${yearSuffix}`, 
-      finnhubSymbol: 'RTY' 
+      finnhubSymbol: `RTY${monthCode}${yearSuffix}` // Use full contract symbol for Finnhub
     },
     { 
       symbol: `VX${monthCode}${yearSuffix}`, 
       name: 'VIX Futures', 
       expiration: expirationDate, 
       contractMonth: `${contractMonth}${yearSuffix}`, 
-      finnhubSymbol: 'VIX' 
+      finnhubSymbol: `VX${monthCode}${yearSuffix}` // Use full contract symbol for Finnhub
     }
   ];
 }
@@ -177,8 +177,8 @@ async function performFuturesScan() {
       // Fetch real quote data from Finnhub
       const quote = await fetchFuturesQuote(futuresContract.finnhubSymbol, finnhubApiKey);
       
-      if (!quote || !quote.c || !quote.pc) {
-        console.log(`Skipping ${futuresContract.symbol}: invalid quote data`);
+      if (!quote || quote.error || !quote.c) {
+        console.log(`❌ Skipping ${futuresContract.symbol}: ${quote?.error || 'invalid quote data'} - API response:`, JSON.stringify(quote));
         continue;
       }
 

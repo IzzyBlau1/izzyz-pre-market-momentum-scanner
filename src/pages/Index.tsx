@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -6,149 +6,161 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
 interface StockScan {
+  id: string;
   symbol: string;
+  company_name?: string;
   price: number;
-  change: number;
-  changePercent: number;
+  previous_close: number;
+  change_percent: number;
   volume: number;
-  volumeSpike: number;
-  float: string;
+  volume_spike: number;
+  estimated_float: number;
   catalyst: string;
-  momentum: {
-    momo1: {
-      "1m": "up" | "down" | "neutral";
-      "5m": "up" | "down" | "neutral";
-      "15m": "up" | "down" | "neutral";
-      "1h": "up" | "down" | "neutral";
-      "4h": "up" | "down" | "neutral";
-      "daily": "up" | "down" | "neutral";
-    };
-    momo2: {
-      "1m": "up" | "down" | "neutral";
-      "5m": "up" | "down" | "neutral";
-      "15m": "up" | "down" | "neutral";
-      "1h": "up" | "down" | "neutral";
-      "4h": "up" | "down" | "neutral";
-      "daily": "up" | "down" | "neutral";
-    };
+  momo1_signals: {
+    '1m'?: 'up' | 'down' | 'neutral';
+    '5m'?: 'up' | 'down' | 'neutral';
+    '15m'?: 'up' | 'down' | 'neutral';
+    '1h'?: 'up' | 'down' | 'neutral';
+    '4h'?: 'up' | 'down' | 'neutral';
+    'daily'?: 'up' | 'down' | 'neutral';
   };
+  momo2_signals: {
+    '1m'?: 'up' | 'down' | 'neutral';
+    '5m'?: 'up' | 'down' | 'neutral';
+    '15m'?: 'up' | 'down' | 'neutral';
+    '1h'?: 'up' | 'down' | 'neutral';
+    '4h'?: 'up' | 'down' | 'neutral';
+    'daily'?: 'up' | 'down' | 'neutral';
+  };
+  scan_timestamp: string;
+  created_at: string;
+  updated_at: string;
 }
 
 const Index = () => {
-  const [isScanning, setIsScanning] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [scanResults, setScanResults] = useState<StockScan[]>([]);
   const [lastScan, setLastScan] = useState<Date | null>(null);
   const { toast } = useToast();
 
-  const mockData: StockScan[] = [
-    {
-      symbol: "WSR",
-      price: 12.19,
-      change: 1.23,
-      changePercent: 10.1,
-      volume: 2450000,
-      volumeSpike: 5.2,
-      float: "9.8M",
-      catalyst: "New Product Announcement",
-      momentum: {
-        momo1: { "1m": "up", "5m": "up", "15m": "up", "1h": "up", "4h": "up", "daily": "up" },
-        momo2: { "1m": "up", "5m": "up", "15m": "up", "1h": "up", "4h": "up", "daily": "up" }
-      }
-    },
-    {
-      symbol: "THC",
-      price: 5.94,
-      change: 0.61,
-      changePercent: 11.5,
-      volume: 1200000,
-      volumeSpike: 8.9,
-      float: "7.3M", 
-      catalyst: "Earnings Beat",
-      momentum: {
-        momo1: { "1m": "up", "5m": "up", "15m": "up", "1h": "up", "4h": "up", "daily": "up" },
-        momo2: { "1m": "up", "5m": "up", "15m": "up", "1h": "up", "4h": "up", "daily": "up" }
-      }
-    },
-    {
-      symbol: "AES",
-      price: 13.15,
-      change: 1.71,
-      changePercent: 15.0,
-      volume: 890000,
-      volumeSpike: 7.3,
-      float: "9.2M",
-      catalyst: "M&A",
-      momentum: {
-        momo1: { "1m": "up", "5m": "up", "15m": "up", "1h": "up", "4h": "up", "daily": "up" },
-        momo2: { "1m": "up", "5m": "up", "15m": "up", "1h": "neutral", "4h": "down", "daily": "up" }
-      }
-    }
-  ];
-
-  const handleScan = async () => {
-    setIsScanning(true);
-    
+  // Load cached scan results from database
+  const loadCachedResults = async () => {
     try {
-      const { data, error } = await supabase.functions.invoke('scan-stocks');
-      
+      const { data, error } = await supabase
+        .from('momentum_scans')
+        .select('*')
+        .order('change_percent', { ascending: false })
+        .limit(15);
+
       if (error) throw error;
-      
-      // Convert results to match our interface  
-      const formattedResults = data.results.map((stock: any) => ({
-        symbol: stock.symbol,
-        price: parseFloat(stock.price),
-        change: parseFloat(stock.change.replace(/[+%]/g, '')),
-        changePercent: parseFloat(stock.change.replace(/[+%]/g, '')),
-        volume: parseInt(stock.volume.replace(/,/g, '')),
-        volumeSpike: parseFloat(stock.volumeSpike?.replace('x', '') || '1'),
-        float: stock.float,
-        catalyst: stock.catalyst,
-        momentum: {
-          momo1: stock.momentum?.momo1 || {
-            "1m": "neutral" as const,
-            "5m": "neutral" as const, 
-            "15m": "neutral" as const,
-            "1h": "neutral" as const,
-            "4h": "neutral" as const,
-            "daily": "neutral" as const
-          },
-          momo2: stock.momentum?.momo2 || {
-            "1m": "neutral" as const,
-            "5m": "neutral" as const,
-            "15m": "neutral" as const,
-            "1h": "neutral" as const,
-            "4h": "neutral" as const,
-            "daily": "neutral" as const
-          }
-        }
-      }));
-      
-      setScanResults(formattedResults);
-      setLastScan(new Date());
-      
-      toast({
-        title: "Scan Complete",
-        description: `Found ${data.results.length} qualifying stocks.`,
-      });
+
+      if (data && data.length > 0) {
+        // Transform the data to match our interface
+        const transformedData: StockScan[] = data.map(item => ({
+          ...item,
+          momo1_signals: typeof item.momo1_signals === 'string' 
+            ? JSON.parse(item.momo1_signals) 
+            : item.momo1_signals,
+          momo2_signals: typeof item.momo2_signals === 'string' 
+            ? JSON.parse(item.momo2_signals) 
+            : item.momo2_signals,
+        }));
+        
+        setScanResults(transformedData);
+        // Get the latest scan timestamp
+        const latestScan = data.reduce((latest, current) => {
+          return new Date(current.scan_timestamp) > new Date(latest.scan_timestamp) ? current : latest;
+        });
+        setLastScan(new Date(latestScan.scan_timestamp));
+      }
     } catch (error) {
-      console.error('Scan error:', error);
-      toast({
-        title: "Scan Failed",
-        description: "Error scanning stocks. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsScanning(false);
+      console.error('Error loading cached results:', error);
     }
   };
 
-  const getMomentumColor = (direction: string) => {
+  // Trigger a background scan manually
+  const triggerBackgroundScan = async () => {
+    setIsLoading(true);
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('background-scan');
+      
+      if (error) throw error;
+      
+      toast({
+        title: "Scan Triggered",
+        description: "Background scan initiated. Results will update automatically.",
+      });
+
+      // Reload results after a short delay to get fresh data
+      setTimeout(() => {
+        loadCachedResults();
+      }, 2000);
+
+    } catch (error) {
+      console.error('Background scan error:', error);
+      toast({
+        title: "Scan Failed",
+        description: "Error triggering background scan. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Set up real-time subscriptions
+  useEffect(() => {
+    // Load initial data
+    loadCachedResults();
+
+    // Subscribe to real-time updates
+    const channel = supabase
+      .channel('momentum-scans-updates')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'momentum_scans'
+        },
+        (payload) => {
+          console.log('New scan result:', payload.new);
+          loadCachedResults(); // Reload all results when new data arrives
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'DELETE', 
+          schema: 'public',
+          table: 'momentum_scans'
+        },
+        () => {
+          loadCachedResults(); // Reload when old data is cleaned up
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  const getMomentumColor = (direction: string | undefined) => {
     switch (direction) {
       case "up": return "bg-green-500";
       case "down": return "bg-red-500";
       case "neutral": return "bg-yellow-500";
       default: return "bg-gray-400";
     }
+  };
+
+  const formatFloat = (float: number) => {
+    if (float >= 1000000) {
+      return `${(float / 1000000).toFixed(1)}M`;
+    }
+    return `${(float / 1000).toFixed(1)}K`;
   };
 
   return (
@@ -160,19 +172,24 @@ const Index = () => {
             Izzy'z Pre-Market Momentum Scanner
           </h1>
           <p className="text-xl text-muted-foreground mb-4">
-            AI-Enhanced Pre-Market Stock Scanner ($2-$20 Range)
+            AI-Enhanced Pre-Market Stock Scanner ($1-$20 Range) • Auto-Updates Every 15min
           </p>
-          <Button 
-            onClick={handleScan} 
-            disabled={isScanning}
-            size="lg"
-            className="bg-primary hover:bg-primary/90 mb-4"
-          >
-            {isScanning ? "Scanning..." : "SCAN"}
-          </Button>
+          <div className="flex flex-col items-center gap-2">
+            <Button 
+              onClick={triggerBackgroundScan} 
+              disabled={isLoading}
+              size="lg"
+              className="bg-primary hover:bg-primary/90"
+            >
+              {isLoading ? "Triggering Scan..." : "TRIGGER SCAN"}
+            </Button>
+            <p className="text-xs text-muted-foreground">
+              🚀 Powered by cached results - instantly scalable for thousands of users
+            </p>
+          </div>
           {lastScan && (
             <p className="text-sm text-muted-foreground mt-2">
-              Last scan: {lastScan.toLocaleTimeString()}
+              Last scan: {lastScan.toLocaleTimeString()} on {lastScan.toLocaleDateString()}
             </p>
           )}
         </div>
@@ -181,7 +198,7 @@ const Index = () => {
         {scanResults.length > 0 && (
           <div className="space-y-4">
             <h2 className="text-2xl font-semibold text-foreground mb-4">
-              Scan Results ({scanResults.length} opportunities)
+              Live Scan Results ({scanResults.length} opportunities)
             </h2>
             
             <div className="overflow-x-auto">
@@ -205,35 +222,42 @@ const Index = () => {
                 </thead>
                 <tbody>
                   {scanResults.map((stock, stockIndex) => (
-                    <React.Fragment key={stock.symbol}>
+                    <React.Fragment key={stock.id}>
                       {/* MoMo1 Row */}
                       <tr className={stockIndex % 2 === 0 ? "bg-background" : "bg-muted/30"}>
                         <td className="border border-border p-3 font-semibold" rowSpan={2}>
                           {stock.symbol}
+                          {stock.company_name && (
+                            <div className="text-xs text-muted-foreground mt-1">
+                              {stock.company_name.substring(0, 20)}...
+                            </div>
+                          )}
                         </td>
                         <td className="border border-border p-3 text-center" rowSpan={2}>
-                          {stock.price.toFixed(2)}
+                          ${stock.price.toFixed(2)}
                         </td>
                         <td className={`border border-border p-3 text-center font-semibold ${
-                          stock.changePercent >= 0 ? 'text-green-600' : 'text-red-600'
+                          stock.change_percent >= 0 ? 'text-green-600' : 'text-red-600'
                         }`} rowSpan={2}>
-                          {stock.changePercent >= 0 ? '+' : ''}{stock.changePercent.toFixed(1)}%
+                          {stock.change_percent >= 0 ? '+' : ''}{stock.change_percent.toFixed(1)}%
                         </td>
                         <td className="border border-border p-3 text-center" rowSpan={2}>
-                          {stock.volumeSpike.toFixed(1)}x
+                          {stock.volume_spike.toFixed(1)}x
                         </td>
                         <td className="border border-border p-3 text-center" rowSpan={2}>
-                          {stock.float}
+                          {formatFloat(stock.estimated_float)}
                         </td>
                         <td className="border border-border p-3 text-center text-sm" rowSpan={2}>
-                          {stock.catalyst}
+                          <div className="max-w-[200px] truncate">
+                            {stock.catalyst}
+                          </div>
                         </td>
                         <td className="border border-border p-3 text-center text-sm font-semibold">
                           MoMo1
                         </td>
                         {(["1m", "5m", "15m", "1h", "4h", "daily"] as const).map((timeframe) => (
                           <td key={`momo1-${timeframe}`} className="border border-border p-3 text-center">
-                            <div className={`w-4 h-4 mx-auto rounded-full ${getMomentumColor(stock.momentum.momo1[timeframe])}`}></div>
+                            <div className={`w-4 h-4 mx-auto rounded-full ${getMomentumColor(stock.momo1_signals[timeframe])}`}></div>
                           </td>
                         ))}
                       </tr>
@@ -244,7 +268,7 @@ const Index = () => {
                         </td>
                         {(["1m", "5m", "15m", "1h", "4h", "daily"] as const).map((timeframe) => (
                           <td key={`momo2-${timeframe}`} className="border border-border p-3 text-center">
-                            <div className={`w-4 h-4 mx-auto rounded-full ${getMomentumColor(stock.momentum.momo2[timeframe])}`}></div>
+                            <div className={`w-4 h-4 mx-auto rounded-full ${getMomentumColor(stock.momo2_signals[timeframe])}`}></div>
                           </td>
                         ))}
                       </tr>
@@ -257,11 +281,27 @@ const Index = () => {
         )}
 
         {/* Empty State */}
-        {scanResults.length === 0 && !isScanning && (
+        {scanResults.length === 0 && !isLoading && (
+          <Card className="text-center py-12">
+            <CardContent>
+              <div className="space-y-4">
+                <p className="text-muted-foreground">
+                  No momentum opportunities found in the latest scan.
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Background scans run automatically every 15 minutes. Click "TRIGGER SCAN" to run a manual scan.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Loading State */}
+        {isLoading && scanResults.length === 0 && (
           <Card className="text-center py-12">
             <CardContent>
               <p className="text-muted-foreground">
-                Click SCAN to find pre-market momentum opportunities
+                Running background scan... Please wait.
               </p>
             </CardContent>
           </Card>

@@ -211,7 +211,7 @@ const LandingPage = () => {
                     <td className="p-3 font-semibold text-cyan-400">NVDA</td>
                     <td className="p-3 text-green-400">139.76</td>
                     {momentumStates['NVDA']?.map((signal, index) => (
-                      <td key={index} className={`p-3 text-center font-semibold transition-all duration-300 ${getSignalStyle(signal)} animate-pulse`}>
+                      <td key={index} className={`p-3 text-center font-semibold transition-all duration-300 ${getSignalStyle(signal)}`}>
                         {signal}
                       </td>
                     ))}
@@ -255,7 +255,7 @@ const LandingPage = () => {
                     <td className="p-3 font-semibold text-cyan-400">SPY</td>
                     <td className="p-3 text-green-400">598.12</td>
                     {momentumStates['SPY']?.map((signal, index) => (
-                      <td key={index} className={`p-3 text-center font-semibold transition-all duration-300 ${getSignalStyle(signal)} animate-pulse`}>
+                      <td key={index} className={`p-3 text-center font-semibold transition-all duration-300 ${getSignalStyle(signal)}`}>
                         {signal}
                       </td>
                     ))}
@@ -266,7 +266,7 @@ const LandingPage = () => {
                     <td className="p-3 font-semibold text-cyan-400">/NQ</td>
                     <td className="p-3 text-green-400">21850.25</td>
                     {momentumStates['/NQ']?.map((signal, index) => (
-                      <td key={index} className={`p-3 text-center font-semibold transition-all duration-300 ${getSignalStyle(signal)} animate-pulse`}>
+                      <td key={index} className={`p-3 text-center font-semibold transition-all duration-300 ${getSignalStyle(signal)}`}>
                         {signal}
                       </td>
                     ))}

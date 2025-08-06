@@ -45,23 +45,7 @@ const LandingPage = () => {
     initializeMomentumStates();
   }, []);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setMomentumStates(prev => {
-        const newStates = { ...prev };
-        Object.keys(newStates).forEach(ticker => {
-          if (ticker !== 'SPY' && ticker !== '/NQ' && ticker !== 'NVDA') {
-            // Randomly update some cells for slot machine effect
-            newStates[ticker] = newStates[ticker].map(signal => 
-              Math.random() < 0.3 ? getRandomSignal() : signal
-            );
-          }
-        });
-        return newStates;
-      });
-    }, 15000);
-    return () => clearInterval(interval);
-  }, []);
+  // Animation stopped per user request
 
   const features = [
     {

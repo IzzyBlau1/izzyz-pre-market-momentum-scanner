@@ -59,7 +59,7 @@ const LandingPage = () => {
         });
         return newStates;
       });
-    }, 4000);
+    }, 10000);
     return () => clearInterval(interval);
   }, []);
 
